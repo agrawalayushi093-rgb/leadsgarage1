@@ -7,7 +7,7 @@ import styles from './Hero.module.css';
 // CAROUSEL SPEED SETTING (Yahan se slide change aur fill hone ki speed set karein)
 // Current: 4 seconds
 // ============================================================================
-const SLIDE_DURATION_SECONDS = 4; 
+const SLIDE_DURATION_SECONDS = 4;
 const AUTOPLAY_INTERVAL = SLIDE_DURATION_SECONDS * 1000;
 // ============================================================================
 
@@ -108,6 +108,7 @@ const slides = [
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isInitialMount, setIsInitialMount] = useState(true);
+  const [decorationsEntered, setDecorationsEntered] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
@@ -140,11 +141,22 @@ export default function Hero() {
 
   // Coordinate initial entrance after site preloader finishes
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (shouldReduceMotion) {
+      setDecorationsEntered(true);
+      setIsInitialMount(false);
+      return;
+    }
+    const decoTimer = setTimeout(() => {
+      setDecorationsEntered(true);
+    }, 900);
+    const mountTimer = setTimeout(() => {
       setIsInitialMount(false);
     }, 1600);
-    return () => clearTimeout(timer);
-  }, []);
+    return () => {
+      clearTimeout(decoTimer);
+      clearTimeout(mountTimer);
+    };
+  }, [shouldReduceMotion]);
 
   const handleSlideChange = (idx) => {
     if (idx === currentSlide || isTransitioning) return;
@@ -155,8 +167,8 @@ export default function Hero() {
 
   const activeSlide = slides[currentSlide];
 
-  // Helper for directional entrance and exit of decorative assets
-  const getDecorationAnimation = (type, position, slideId) => {
+  // Helper for directional entrance and exit of decorative assets with initial delay and stagger
+  const getDecorationAnimation = (type, position, slideId, decoIdx = 0) => {
     const isSlide3BottomRight = position === styles.bottomRight && slideId === 3;
     const targetRotate = isSlide3BottomRight ? -15 : 0;
 
@@ -164,19 +176,27 @@ export default function Hero() {
     let exitOffset = { x: 0, y: 0 };
     if (!shouldReduceMotion) {
       if (type === 'topLeft') {
-        initialOffset = { x: -45, y: -35 };
-        exitOffset = { x: -30, y: -20 };
+        initialOffset = { x: -35, y: -25 };
+        exitOffset = { x: -25, y: -18 };
       } else if (type === 'topRight') {
-        initialOffset = { x: 45, y: -35 };
-        exitOffset = { x: 30, y: -20 };
+        initialOffset = { x: 35, y: -25 };
+        exitOffset = { x: 25, y: -18 };
       } else if (type === 'bottomLeft') {
-        initialOffset = { x: -45, y: 35 };
-        exitOffset = { x: -30, y: 20 };
+        initialOffset = { x: -35, y: 25 };
+        exitOffset = { x: -25, y: 18 };
       } else if (type === 'bottomRight') {
-        initialOffset = { x: 45, y: 35 };
-        exitOffset = { x: 30, y: 20 };
+        initialOffset = { x: 35, y: 25 };
+        exitOffset = { x: 25, y: 18 };
       }
     }
+
+    // On initial mount: stagger by 200ms (0.2s) between images.
+    // On subsequent slide transitions: minimal delay for smooth crossfade.
+    const delay = shouldReduceMotion
+      ? 0
+      : !decorationsEntered
+      ? decoIdx * 0.2
+      : 0.05 + decoIdx * 0.04;
 
     return {
       initial: {
@@ -197,7 +217,7 @@ export default function Hero() {
       },
       transition: {
         duration: shouldReduceMotion ? 0 : 0.75,
-        delay: shouldReduceMotion ? 0 : (isInitialMount ? 1.2 : 0.05),
+        delay,
         ease: [0.16, 1, 0.3, 1],
       },
     };
@@ -264,22 +284,23 @@ export default function Hero() {
                 ['topRightGraphic', styles.topRight, 'topRight'],
                 ['bottomLeftGraphic', styles.bottomLeft, 'bottomLeft'],
                 ['bottomRightGraphic', styles.bottomRight, 'bottomRight'],
-              ].map(([asset, position, type]) => {
-                if (!activeSlide[asset]) return null;
-                const anim = getDecorationAnimation(type, position, activeSlide.id);
-                return (
-                  <motion.img
-                    key={`${activeSlide.id}-${asset}`}
-                    src={activeSlide[asset]}
-                    alt=""
-                    className={`${styles.decoration} ${position}`}
-                    initial={anim.initial}
-                    animate={anim.animate}
-                    exit={anim.exit}
-                    transition={anim.transition}
-                  />
-                );
-              })}
+              ]
+                .filter(([asset]) => Boolean(activeSlide[asset]))
+                .map(([asset, position, type], decoIdx) => {
+                  const anim = getDecorationAnimation(type, position, activeSlide.id, decoIdx);
+                  return (
+                    <motion.img
+                      key={`${activeSlide.id}-${asset}`}
+                      src={activeSlide[asset]}
+                      alt=""
+                      className={`${styles.decoration} ${position}`}
+                      initial={anim.initial}
+                      animate={decorationsEntered || shouldReduceMotion ? anim.animate : anim.initial}
+                      exit={anim.exit}
+                      transition={anim.transition}
+                    />
+                  );
+                })}
 
               {/* Left Showcase Card - Enters & exits smoothly */}
               <motion.img
