@@ -125,7 +125,13 @@ export default function LeadershipTeam() {
                   tabIndex={0}
                   onMouseEnter={() => setHoveredLeader(idx)}
                   onMouseLeave={() => setHoveredLeader(null)}
-                  className={`leader-card group relative rounded-[2.5rem] p-5 sm:p-6 text-center transition-all duration-300 bg-transparent border border-transparent shadow-none hover:bg-white hover:border-slate-100 hover:shadow-[0_20px_50px_rgba(0,0,0,0.12)] hover:scale-[1.02] cursor-pointer w-full ${
+                  onFocus={() => setHoveredLeader(idx)}
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                      setHoveredLeader(null);
+                    }
+                  }}
+                  className={`leader-card group relative rounded-[2.5rem] p-5 sm:p-6 text-center transition-all duration-300 bg-transparent border border-transparent shadow-none hover:bg-white hover:border-slate-100 hover:shadow-[0_20px_50px_rgba(0,0,0,0.12)] hover:scale-[1.02] focus-within:bg-white focus-within:border-slate-100 focus-within:shadow-[0_20px_50px_rgba(0,0,0,0.12)] focus-within:scale-[1.02] cursor-pointer w-full relative z-20 ${
                     isHovered ? 'is-hovered bg-white border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.12)] scale-[1.02]' : ''
                   }`}
                 >
@@ -147,10 +153,10 @@ export default function LeadershipTeam() {
 
                   <p className="leader-role">{leader.role}</p>
 
-                  {/* Revealed when hovered, stays active seamlessly when cursor is anywhere inside the card */}
+                  {/* Revealed when hovered or focused, stays active seamlessly across whole card */}
                   <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out max-h-0 opacity-0 group-hover:max-h-52 group-hover:opacity-100 group-hover:mt-2 pointer-events-auto ${
-                      isHovered ? 'max-h-52 opacity-100 mt-2' : ''
+                    className={`overflow-hidden transition-all duration-300 ease-in-out max-h-0 opacity-0 group-hover:max-h-52 group-hover:opacity-100 group-hover:pt-2 group-focus-within:max-h-52 group-focus-within:opacity-100 group-focus-within:pt-2 pointer-events-auto ${
+                      isHovered ? 'max-h-52 opacity-100 pt-2' : ''
                     }`}
                   >
                     {/* Divider Line */}
@@ -167,7 +173,7 @@ export default function LeadershipTeam() {
                         href={leader.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-11 h-11 rounded-full bg-[#1866E5] hover:bg-[#1253BE] text-white flex items-center justify-center shadow-md transition-transform duration-200 hover:scale-110 cursor-pointer pointer-events-auto relative z-10"
+                        className="w-11 h-11 rounded-full bg-[#1866E5] hover:bg-[#1253BE] text-white flex items-center justify-center shadow-md transition-transform duration-200 hover:scale-110 cursor-pointer pointer-events-auto relative z-20"
                         aria-label={`${leader.name} LinkedIn`}
                       >
                         <img
@@ -179,7 +185,7 @@ export default function LeadershipTeam() {
 
                       <a
                         href={leader.email}
-                        className="w-11 h-11 rounded-full bg-[#1866E5] hover:bg-[#1253BE] text-white flex items-center justify-center shadow-md transition-transform duration-200 hover:scale-110 cursor-pointer pointer-events-auto relative z-10"
+                        className="w-11 h-11 rounded-full bg-[#1866E5] hover:bg-[#1253BE] text-white flex items-center justify-center shadow-md transition-transform duration-200 hover:scale-110 cursor-pointer pointer-events-auto relative z-20"
                         aria-label={`Email ${leader.name}`}
                       >
                         <img

@@ -8,8 +8,21 @@
   mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, .12) 4%, rgba(0, 0, 0, .5) 11%, #000 23%, #000 82%, transparent 100%);
 }
 
+/* Ensure main and team stay above closing-section in stacking order */
+.backgroundMerge main {
+  position: relative;
+  z-index: 20;
+}
+
+:global(.pin-spacer-leadership-team-pin) {
+  position: relative;
+  z-index: 20;
+}
+
 /* Reduce only the breathing space below the team content. */
 .backgroundMerge :global(#team) {
+  position: relative;
+  z-index: 20;
   padding-bottom: clamp(24px, 4vh, 48px);
   overflow: visible;
 }
@@ -20,8 +33,10 @@
 /* The artwork includes empty sky above its cards: overlap that decorative area. */
 .backgroundMerge :global(.closing-section) {
   position: relative;
+  z-index: 10;
   margin-top: calc(-180 * var(--figma-unit));
 }
 .backgroundMerge :global(#team) > div:last-child {
-  z-index: 20;
+  position: relative;
+  z-index: 25;
 }
