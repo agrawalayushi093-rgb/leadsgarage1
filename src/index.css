@@ -94,11 +94,11 @@ section { scroll-margin-top: 90px; }
   box-sizing: border-box;
 }
 
-/* Services: 1498 × 830 cards with 114px vertical separation. */
-#services { background-color: #FDFBF7; background-image: url('/image/Home/section2/background.png'); background-size: 600px auto; background-repeat: repeat; background-position: center; padding: 0; margin-bottom: 90px; }
+/* Services: 1498 × 725 cards with tightened vertical padding. */
+#services { background-color: #FDFBF7; background-image: url('/image/Home/section2/background.png'); background-size: 600px auto; background-repeat: repeat; background-position: center; padding: 0; margin-bottom: 75px; }
 .pin-spacer { background-color: #FDFBF7 !important; background-image: url('/image/Home/section2/background.png') !important; background-size: 600px auto !important; background-repeat: repeat !important; background-position: center !important; }
 #services > div { width: min(calc(100% - 40px),calc(1498 * var(--figma-unit))); max-width: 1498px; padding: 0; }
-#services .service-card { border-radius: calc(28 * var(--figma-unit)); padding: calc(120 * var(--figma-unit)) calc(114 * var(--figma-unit)); min-height: calc(830 * var(--figma-unit)); background: linear-gradient(100deg, #ffffffc9, #fff8eddb); border: 1px solid #dedbd5; box-shadow: 25px 30px 35px -20px #28322e40; }
+#services .service-card { border-radius: calc(28 * var(--figma-unit)); padding: calc(68 * var(--figma-unit)) calc(114 * var(--figma-unit)) calc(95 * var(--figma-unit)); min-height: calc(725 * var(--figma-unit)); background: linear-gradient(100deg, #ffffffc9, #fff8eddb); border: 1px solid #dedbd5; box-shadow: 25px 30px 35px -20px #28322e40; }
 #services .service-card + .service-card { margin-top: calc(114 * var(--figma-unit)); }
 #services .service-card > div { grid-template-columns: 43% 15.5% 41.5%; gap: 0; }
 #services .service-card > div > div { grid-column: auto; padding: 0; min-width: 0; }
@@ -108,7 +108,7 @@ section { scroll-margin-top: 90px; }
 #services .service-caption { width: 75%; max-width: none; bottom: calc(-44 * var(--figma-unit)); left: 14.3%; padding: calc(42 * var(--figma-unit)); border-radius: calc(18 * var(--figma-unit)); border: 0; }
 #services .service-caption h3 { font-family: Inter,sans-serif; font-size: calc(46 * var(--figma-unit)); font-weight: 500; line-height: 1.22; color: #333; }
 #services .service-caption p { font-family: Inter,sans-serif; font-size: max(12px,calc(16 * var(--figma-unit))); line-height: 1.5; color: #333; margin-top: calc(20 * var(--figma-unit)); }
-#services .service-card > div > div:nth-child(2) { min-height: calc(540 * var(--figma-unit)); }
+#services .service-card > div > div:nth-child(2) { min-height: calc(490 * var(--figma-unit)); }
 #services .service-card > div > div:nth-child(2) > div:last-child { gap: calc(40 * var(--figma-unit)); }
 #services .service-card > div > div:nth-child(2) > div:last-child > div { margin: 0; }
 #services .service-card > div > div:nth-child(2) > div:last-child > div > div { width: calc(21 * var(--figma-unit)); height: calc(21 * var(--figma-unit)); border-width: 1px; border-color: #999; box-shadow: none; }
@@ -134,7 +134,7 @@ section { scroll-margin-top: 90px; }
 #solutions { background: transparent; padding: 30px 0 calc(60 * var(--figma-unit)); }
 #solutions > div { width: min(calc(100% - 40px),calc(1540 * var(--figma-unit))); max-width: 1540px; padding: 0; }
 #solutions h2, #quality h2, #audience h2, #team h2 { font-family: Inter,sans-serif; font-size: clamp(28px,3.125vw,60px); font-weight: 700; line-height: 1.2; color: #080808; white-space: normal; }
-#solutions .why-heading { position: relative; top: auto; max-width: none; padding: 0; margin-bottom: calc(100 * var(--figma-unit)); backdrop-filter: none; }
+#solutions .why-heading { position: relative; max-width: none; padding: 0; margin-bottom: calc(32 * var(--figma-unit)); backdrop-filter: none; }
 #solutions .cards-stage { padding: 0; position: relative; }
 #solutions .solution-surface, #solutions .solution-art { border-radius: 0; overflow: visible; }
 #solutions img { mix-blend-mode: normal; transform: none; width: 100%; height: auto; }
@@ -145,10 +145,9 @@ section { scroll-margin-top: 90px; }
 @media (max-width: 1023px) { #solutions .desktop-break { display: none; } }
 @media (min-width: 1024px) { #solutions .card-5 .solution-copy { width: 43%; } }
 @media (min-width: 1024px) { #solutions .card-5 .solution-copy h3 { font-size: calc(46 * var(--figma-unit)); } }
-@media(max-width:1023px) { #solutions { padding: 70px 0; } #solutions > div { width: calc(100% - 40px); } #solutions .why-heading { margin-bottom: 40px; } }
+@media(max-width:1023px) { #solutions { padding: 40px 0; } #solutions > div { width: calc(100% - 40px); } #solutions .why-heading { margin-bottom: 20px; } }
 @media(min-width:640px) and (max-width:1023px) { #solutions .solution-copy h3 { font-size: 22px; } #solutions .solution-copy p { font-size: 13px; } }
 @media(max-width:639px) {
- #solutions .cards-stage > div + div { margin-top: 24px; }
  #solutions .solution-surface { display: flex; flex-direction: column-reverse; overflow: hidden; border-radius: 20px; background: #02b8c9; }
  #solutions .card-2 .solution-surface { background: #00bb93; }
  #solutions .card-3 .solution-surface { background: #1595f5; }
@@ -189,9 +188,9 @@ section { scroll-margin-top: 90px; }
 }
 
 /* Partnership cards: two 602 × 624 panels, separated by 68px. */
-#audience { background: #fff8eb url('/image/Home/section2/background.png') center / min(100vw,1920px) auto; padding: calc(140 * var(--figma-unit)) 20px calc(200 * var(--figma-unit)); }
+#audience { background: #fff8eb url('/image/Home/section2/background.png') center / min(100vw,1920px) auto; padding: clamp(20px, 2.8vh, 36px) 20px clamp(24px, 3.2vh, 40px); }
 #audience > div { max-width: 1540px; padding: 0; }
-#audience > div > div:first-child { max-width: none; margin-bottom: calc(88 * var(--figma-unit)); }
+#audience > div > div:first-child { max-width: none; margin-bottom: clamp(16px, 2.2vh, 28px); }
 #audience p { font-family: Inter,sans-serif; font-size: max(14px,calc(20 * var(--figma-unit))); color: black; }
 #audience .grid { max-width: calc(1272 * var(--figma-unit)); gap: calc(68 * var(--figma-unit)); margin-inline: auto; }
 #audience .grid > div { min-height: calc(624 * var(--figma-unit)); padding: calc(65 * var(--figma-unit)) calc(54 * var(--figma-unit)) 0; border-radius: calc(28 * var(--figma-unit)); background: linear-gradient(#5875d5,#2142bc); box-shadow: inset 0 -4px 0 #7189ed; }
@@ -200,7 +199,7 @@ section { scroll-margin-top: 90px; }
 #audience .grid h3 { font-weight: 700; }
 #audience .grid img { max-width: none; width: 100%; height: auto; }
 #audience .grid > div > div:last-child { margin-top: calc(32 * var(--figma-unit)); }
-@media(max-width:1023px) { #audience { padding: 70px 20px; } #audience > div > div:first-child { margin-bottom: 40px; } #audience p { font-size: 15px; } #audience .grid { max-width: 720px; gap: 24px; } #audience .grid > div { min-height: 360px; padding: 30px 24px 0; border-radius: 24px; } #audience .grid span, #audience .grid h3 { font-size: 36px; } }
+@media(max-width:1023px) { #audience { padding: 40px 20px; } #audience > div > div:first-child { margin-bottom: 24px; } #audience p { font-size: 15px; } #audience .grid { max-width: 720px; gap: 24px; } #audience .grid > div { min-height: 360px; padding: 30px 24px 0; border-radius: 24px; } #audience .grid span, #audience .grid h3 { font-size: 36px; } }
 @media(max-width:767px) { #audience .grid { max-width: 430px; } }
 
 #network { background: linear-gradient(#fff8eb,white 35%); padding: 0; }
@@ -250,6 +249,7 @@ section { scroll-margin-top: 90px; }
 #team .leader-card a img { width: 100%; height: 100%; object-fit: contain; }
 @media(max-width:1023px) { #team { padding: 70px 20px; } #team .grid { gap: 24px; max-width: 800px; } #team .leader-card { padding: 18px; border-radius: 28px; } #team h3 { font-size: 24px; white-space: normal; } #team p { font-size: 15px; } #team .leader-card > div:first-child { margin-bottom: 24px; border-radius: 24px; } }
 @media(max-width:639px) { #team .grid { max-width: 380px; } #team .leader-card > div:last-child { max-height: 180px; opacity: 1; margin-top: 16px; } }
+#faces-behind-success { scroll-margin-top: clamp(84px, 6vw, 110px); }
 
 
 /* The closing artwork is a 1920px composition; its footer overlaps the sky. */

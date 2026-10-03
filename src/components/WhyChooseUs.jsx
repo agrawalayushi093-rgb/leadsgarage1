@@ -5,15 +5,14 @@ import styles from './WhyChooseUs.module.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function WhyChooseUs() {
+export default function WhyChooseUs({ onOpenContact }) {
   const sectionRef = useRef(null);
-  const cardsWrapperRef = useRef(null);
+  const stageRef = useRef(null);
   const cardRefs = useRef([]);
-  cardRefs.current = [];
 
-  const addToCardRefs = (el) => {
-    if (el && !cardRefs.current.includes(el)) {
-      cardRefs.current.push(el);
+  const addToCardRefs = (el, idx) => {
+    if (el) {
+      cardRefs.current[idx] = el;
     }
   };
 
@@ -50,85 +49,103 @@ export default function WhyChooseUs() {
     }
   ];
 
-  // GSAP ScrollTrigger Pinned Stacking Card Animation with ~42px Stack Gap & Zero White Wrapper Strips
+  // GSAP ScrollTrigger Pinned Stacking Card Animation with sticky heading
   useEffect(() => {
-    const cardsWrapper = cardsWrapperRef.current;
-    if (!cardsWrapper || cardRefs.current.length === 0) return;
+    const stage = stageRef.current;
+    if (!stage) return;
 
-    const ctx = gsap.context(() => {
-      const cardsList = cardRefs.current;
-      const totalCards = cardsList.length;
+    let ctx;
+    const initAnimation = () => {
+      ctx = gsap.context(() => {
+        const cardsList = cardRefs.current.filter(Boolean);
+        const totalCards = cardsList.length;
+        if (totalCards === 0) return;
 
-      // Responsive stack gap offset (42px desktop, 30px tablet, 18px mobile)
-      const getStackGap = () => {
-        if (window.innerWidth < 640) return 18;
-        if (window.innerWidth < 1024) return 30;
-        return 42;
-      };
+        // Responsive stack gap offset (42px desktop, 30px tablet, 18px mobile)
+        const getStackGap = () => {
+          if (window.innerWidth < 640) return 18;
+          if (window.innerWidth < 1024) return 30;
+          return 42;
+        };
 
-      const stackGap = getStackGap();
+        const getHeaderOffset = () => {
+          return window.innerWidth < 768 ? 64 : 76;
+        };
 
-      // Initial card positions:
-      // Card 0: yPercent: 0, y: 0, scale: 1, zIndex: 10
-      // Cards 1 to N-1: yPercent: 115, y: 0, scale: 1, zIndex: 10 + index * 10
-      cardsList.forEach((card, index) => {
-        if (index === 0) {
-          gsap.set(card, { yPercent: 0, y: 0, scale: 1, zIndex: 10 });
-        } else {
-          gsap.set(card, { yPercent: 115, y: 0, scale: 1, zIndex: 10 + index * 10 });
-        }
-      });
+        const stackGap = getStackGap();
 
-      // Master GSAP Timeline linked to ScrollTrigger pinning
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: cardsWrapper,
-          start: 'top top+=110',
-          end: () => `+=${window.innerHeight * 0.7 * (totalCards - 1)}`,
-          scrub: 0.8,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        }
-      });
-
-      // Animate each incoming card to its stacked vertical offset (Card 1 -> 42px, Card 2 -> 84px, Card 3 -> 126px, Card 4 -> 168px)
-      for (let i = 1; i < totalCards; i++) {
-        const incomingCard = cardsList[i];
-        const targetY = i * stackGap;
-
-        // Incoming card slides up from below into its stacked position
-        tl.to(incomingCard, {
-          yPercent: 0,
-          y: targetY,
-          ease: 'none',
-          duration: 1,
+        // Initial card positions:
+        // Card 0 starts visible; incoming cards 1 to N-1 start offset below
+        cardsList.forEach((card, index) => {
+          if (index === 0) {
+            gsap.set(card, { yPercent: 0, y: 0, scale: 1, zIndex: 10 });
+          } else {
+            gsap.set(card, { yPercent: 115, y: 0, scale: 1, zIndex: 10 + index * 10 });
+          }
         });
 
-        // Previous cards remain visible at their stacked offsets with extremely subtle scale depth (1 -> 0.99 -> 0.98)
-        for (let j = 0; j < i; j++) {
-          const prevCard = cardsList[j];
-          const depthFromActive = i - j;
-          const targetScale = Math.max(0.97, 1 - depthFromActive * 0.01);
-          tl.to(prevCard, {
-            scale: targetScale,
+        // Master GSAP Timeline pinned to stage (keeps heading + subtitle sticky while cards stack underneath)
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            id: 'solutions-pin',
+            trigger: stage,
+            start: () => `top top+=${getHeaderOffset()}`,
+            end: () => `+=${window.innerHeight * 0.75 * (totalCards - 1)}`,
+            scrub: 0.8,
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          }
+        });
+
+        // Animate each incoming card to its stacked vertical offset
+        for (let i = 1; i < totalCards; i++) {
+          const incomingCard = cardsList[i];
+          const targetY = i * stackGap;
+
+          // Incoming card slides up smoothly into its stacked position
+          tl.to(incomingCard, {
+            yPercent: 0,
+            y: targetY,
             ease: 'none',
             duration: 1,
-          }, '<');
-        }
-      }
-    }, sectionRef);
+          });
 
-    return () => ctx.revert();
+          // Previous cards remain visible with subtle scale depth
+          for (let j = 0; j < i; j++) {
+            const prevCard = cardsList[j];
+            const depthFromActive = i - j;
+            const targetScale = Math.max(0.97, 1 - depthFromActive * 0.01);
+            tl.to(prevCard, {
+              scale: targetScale,
+              ease: 'none',
+              duration: 1,
+            }, '<');
+          }
+        }
+      }, sectionRef);
+    };
+
+    initAnimation();
+
+    // Re-calculate after layout stabilization
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 350);
+
+    return () => {
+      clearTimeout(timer);
+      if (ctx) ctx.revert();
+    };
   }, [cards.length]);
 
   return (
     <section id="solutions" ref={sectionRef} className="why-section relative w-full bg-transparent py-4 sm:py-8">
       <div className="why-rail w-full max-w-[1360px] mx-auto px-3 sm:px-6 lg:px-8">
-        <div className={styles.stage}>
+        <div ref={stageRef} className={styles.stage}>
         
-        {/* Section Heading (Appears normally above cards stack) */}
-        <div className="why-heading relative z-10 pt-2 pb-4 mb-6 text-center max-w-5xl mx-auto flex flex-col items-center">
+        {/* Section Heading: Stays sticky with stage until all cards complete */}
+        <div className="why-heading relative z-20 pt-1 pb-1 mb-2 sm:mb-3 text-center max-w-5xl mx-auto flex flex-col items-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] xl:text-[52px] font-black text-[#222225] tracking-tight whitespace-nowrap">
             Why Leading Brands Choose LeadsGarage
           </h2>
@@ -139,14 +156,14 @@ export default function WhyChooseUs() {
 
         {/* GSAP ScrollTrigger Pinned Stacking Cards Stage */}
         <div 
-          ref={cardsWrapperRef} 
-          className={`cards-stage ${styles.stack} w-full relative min-h-[520px] sm:min-h-[660px] md:min-h-[720px] flex justify-center items-start my-4`}
+          className={`cards-stage ${styles.stack} w-full relative min-h-[520px] sm:min-h-[660px] md:min-h-[720px] flex justify-center items-start mt-1 mb-2`}
         >
           {cards.map((card, idx) => (
             <div
               key={card.id}
-              ref={addToCardRefs}
-              className={`solution-card-wrapper card card-${idx + 1} ${styles.item} w-full flex justify-center p-0 m-0 bg-transparent border-0 shadow-none`}
+              ref={(el) => addToCardRefs(el, idx)}
+              onClick={() => onOpenContact && onOpenContact()}
+              className={`solution-card-wrapper card card-${idx + 1} ${styles.item} w-full flex justify-center p-0 m-0 bg-transparent border-0 shadow-none cursor-pointer`}
             >
               <div className="solution-surface w-full relative bg-transparent border-0 shadow-none p-0 m-0 overflow-hidden flex justify-center items-center">
                 <div className="solution-art w-full overflow-hidden rounded-2xl sm:rounded-3xl p-0 m-0 bg-transparent border-0 shadow-none">

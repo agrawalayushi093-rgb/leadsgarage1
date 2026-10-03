@@ -34,7 +34,7 @@ export default function LeadershipTeam() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
-        <div className="text-center max-w-4xl mx-auto mb-12 sm:mb-16">
+        <div id="faces-behind-success" className="text-center max-w-4xl mx-auto mb-12 sm:mb-16 scroll-mt-24 sm:scroll-mt-28 lg:scroll-mt-32">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
             The Faces Behind Our Success
           </h2>

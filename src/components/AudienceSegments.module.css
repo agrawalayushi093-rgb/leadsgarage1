@@ -1,0 +1,176 @@
+/* AudienceSegments.module.css */
+
+.cardsWrapper {
+  width: 100%;
+  max-width: 1340px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.cardsContainer {
+  width: 100%;
+  max-width: 1340px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: stretch;
+  justify-content: center;
+  min-height: 520px;
+}
+
+@media (min-width: 768px) {
+  .cardsContainer {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cardsContainer {
+    gap: 1.75rem;
+  }
+}
+
+/* Base Card */
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2.5rem;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+  background: linear-gradient(145deg, #1B5CFF 0%, #0B52F2 50%, #0444D0 100%);
+  border: 1px solid rgba(96, 165, 250, 0.25);
+  box-shadow: 0 20px 35px -10px rgba(11, 40, 140, 0.25);
+  will-change: width, min-width, max-width, flex, box-shadow, border-color;
+  transition:
+    width 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    min-width 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    max-width 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    flex 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Desktop sizing states (min-width: 768px) */
+@media (min-width: 768px) {
+  .card {
+    height: 520px;
+  }
+
+  /* Default state: both cards share equal 50% width */
+  .cardDefault {
+    flex: 1 1 0%;
+    width: calc(50% - 0.75rem);
+    min-width: 0;
+    max-width: calc(50% - 0.75rem);
+  }
+
+  /* Expanded state: smoothly widens to take all space except collapsed pill */
+  .cardExpanded {
+    flex: 1 1 0%;
+    width: calc(100% - 80px - 1.5rem);
+    min-width: 0;
+    max-width: calc(100% - 80px - 1.5rem);
+    border-color: rgba(147, 197, 253, 0.35);
+    box-shadow: 0 25px 50px -12px rgba(4, 30, 110, 0.45);
+  }
+
+  /* Collapsed state: smoothly shrinks into vertical tab */
+  .cardCollapsed {
+    flex: 0 0 80px;
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cardDefault {
+    width: calc(50% - 0.875rem);
+    max-width: calc(50% - 0.875rem);
+  }
+
+  .cardExpanded {
+    width: calc(100% - 96px - 1.75rem);
+    max-width: calc(100% - 96px - 1.75rem);
+  }
+
+  .cardCollapsed {
+    flex: 0 0 96px;
+    width: 96px;
+    min-width: 96px;
+    max-width: 96px;
+  }
+}
+
+/* Mobile sizing states (max-width: 767px) */
+@media (max-width: 767px) {
+  .cardDefault {
+    width: 100%;
+    min-height: 460px;
+  }
+
+  .cardExpanded {
+    width: 100%;
+    min-height: 580px;
+  }
+
+  .cardCollapsed {
+    width: 100%;
+    min-height: 76px;
+  }
+}
+
+/* Layers: Default, Expanded, and Collapsed views */
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  will-change: opacity, transform;
+  transition:
+    opacity 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0ms linear 1100ms;
+}
+
+.layerActive {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+  visibility: visible;
+  transition:
+    opacity 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0ms linear 0ms;
+}
+
+.layerInactive {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.95);
+  visibility: hidden;
+  transition:
+    opacity 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0ms linear 1100ms;
+}
+
+/* Collapsed view specific adjustments */
+.collapsedLayer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .layer {
+    transition-duration: 0.01ms !important;
+  }
+}

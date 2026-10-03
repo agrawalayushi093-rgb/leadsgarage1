@@ -5,9 +5,9 @@ import styles from './Hero.module.css';
 
 // ============================================================================
 // CAROUSEL SPEED SETTING (Yahan se slide change aur fill hone ki speed set karein)
-// Current: 4 seconds
+// 5.5 seconds provides ideal pacing for Phase 1 + Phase 2 sequence + settled reading
 // ============================================================================
-const SLIDE_DURATION_SECONDS = 4;
+const SLIDE_DURATION_SECONDS = 5.5;
 const AUTOPLAY_INTERVAL = SLIDE_DURATION_SECONDS * 1000;
 // ============================================================================
 
@@ -141,7 +141,7 @@ export default function Hero() {
   const [heroReady, setHeroReady] = useState(false);
 
   useEffect(() => {
-    // If preloader is present on page, wait for it to dismiss (1250ms); otherwise start immediately
+    // If preloader is present on page, wait for it to clear completely (1200ms + 500ms fade = 1700ms); otherwise start immediately
     const hasPreloader = typeof document !== 'undefined' && Boolean(document.querySelector('.fixed.z-\\[9999\\]'));
     if (!hasPreloader) {
       setHeroReady(true);
@@ -150,7 +150,7 @@ export default function Hero() {
 
     const timer = setTimeout(() => {
       setHeroReady(true);
-    }, 1250);
+    }, 1650);
 
     return () => clearTimeout(timer);
   }, []);
@@ -164,57 +164,18 @@ export default function Hero() {
 
   const activeSlide = slides[currentSlide];
 
-  // Helper for directional entrance and exit of decorative assets with genuine cumulative sequential stagger
-  const getDecorationAnimation = (type, position, slideId, orderIndex = 0) => {
-    const isSlide3BottomRight = position === styles.bottomRight && slideId === 3;
-    const targetRotate = isSlide3BottomRight ? -15 : 0;
+  // Coordinated 2-phase animation timing constants
+  const CARD_ANIMATION_DURATION = 0.75; // Phase 1 duration: 750ms (cards appear simultaneously)
+  const DECORATION_STAGGER = 0.3; // Phase 2 stagger gap: 300ms between each subsequent decorative image
+  const DECORATION_DURATION = 0.65; // Phase 2 image fade-and-move duration: 650ms
 
-    let initialOffset = { x: 0, y: 0 };
-    let exitOffset = { x: 0, y: 0 };
-    if (!shouldReduceMotion) {
-      if (type === 'topLeft') {
-        initialOffset = { x: -40, y: -30 };
-        exitOffset = { x: -25, y: -20 };
-      } else if (type === 'topRight') {
-        initialOffset = { x: 40, y: -30 };
-        exitOffset = { x: 25, y: -20 };
-      } else if (type === 'bottomLeft') {
-        initialOffset = { x: -40, y: 30 };
-        exitOffset = { x: -25, y: 20 };
-      } else if (type === 'bottomRight') {
-        initialOffset = { x: 40, y: 30 };
-        exitOffset = { x: 25, y: 20 };
-      }
+  const handleSpecialistClick = (e) => {
+    e.preventDefault();
+    const target = document.getElementById('faces-behind-success') || document.getElementById('team');
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.history.pushState(null, '', '#faces-behind-success');
     }
-
-    // Cumulative sequential stagger requested: 0ms, 300ms, 600ms, 900ms
-    const delay = shouldReduceMotion ? 0 : orderIndex * 0.3;
-
-    return {
-      initial: {
-        x: initialOffset.x,
-        y: initialOffset.y,
-        opacity: 0,
-        rotate: targetRotate,
-      },
-      animate: {
-        x: 0,
-        y: 0,
-        opacity: 1,
-        rotate: targetRotate,
-      },
-      exit: {
-        x: exitOffset.x,
-        y: exitOffset.y,
-        opacity: 0,
-        rotate: targetRotate,
-      },
-      transition: {
-        duration: shouldReduceMotion ? 0 : 0.7, // 700ms smooth fade-and-move animation (600–800ms)
-        delay,
-        ease: [0.25, 1, 0.5, 1], // Smooth easing curve
-      },
-    };
   };
 
   return (
@@ -223,13 +184,15 @@ export default function Hero() {
         <div className={styles.panel}>
           {/* Shared Persistent Overlay: Connect with our Specialist (visible and clickable on every slide) */}
           <motion.a
-            href="#audience"
+            href="#faces-behind-success"
+            onClick={handleSpecialistClick}
             className={styles.badge}
+            aria-label="Connect with our Specialist - scroll to leadership team"
             initial={{ y: shouldReduceMotion ? 0 : -15, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+            animate={heroReady ? { y: 0, opacity: 1 } : { y: shouldReduceMotion ? 0 : -15, opacity: 0 }}
             transition={{
               duration: shouldReduceMotion ? 0 : 0.7,
-              delay: shouldReduceMotion ? 0 : (isInitialMount ? 1.1 : 0),
+              delay: shouldReduceMotion ? 0 : 0.2,
               ease: 'easeOut',
             }}
           >
@@ -272,7 +235,67 @@ export default function Hero() {
                 }}
               />
 
-              {/* Decorative Corner / Side Graphics with Directional Entrances and Sequential Stagger */}
+              {/* Phase 1: Left Showcase Card - Enters simultaneously with Right Card */}
+              <motion.img
+                key={`left-card-${activeSlide.id}`}
+                src={activeSlide.leftCardImage}
+                alt="Left Showcase Card"
+                className={`${styles.card} ${styles.leftCard}`}
+                initial={{
+                  opacity: 0,
+                  x: shouldReduceMotion ? 0 : -75,
+                }}
+                animate={heroReady ? {
+                  opacity: 1,
+                  x: 0,
+                } : {
+                  opacity: 0,
+                  x: shouldReduceMotion ? 0 : -75,
+                }}
+                exit={{
+                  opacity: 0,
+                  x: shouldReduceMotion ? 0 : -55,
+                }}
+                transition={{
+                  duration: shouldReduceMotion ? 0 : CARD_ANIMATION_DURATION,
+                  delay: 0, // Starts at t = 0
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+              />
+
+              {/* Phase 1: Right Showcase Card - Enters simultaneously with Left Card */}
+              <motion.img
+                key={`right-card-${activeSlide.id}`}
+                src={activeSlide.rightCardImage}
+                alt="Right Showcase Card"
+                className={`${styles.card} ${styles.rightCard}`}
+                initial={{
+                  opacity: 0,
+                  x: shouldReduceMotion ? 0 : 75,
+                  scale: shouldReduceMotion ? 1 : 0.96,
+                }}
+                animate={heroReady ? {
+                  opacity: 1,
+                  x: 0,
+                  scale: 1,
+                } : {
+                  opacity: 0,
+                  x: shouldReduceMotion ? 0 : 75,
+                  scale: shouldReduceMotion ? 1 : 0.96,
+                }}
+                exit={{
+                  opacity: 0,
+                  x: shouldReduceMotion ? 0 : 55,
+                  scale: 0.96,
+                }}
+                transition={{
+                  duration: shouldReduceMotion ? 0 : CARD_ANIMATION_DURATION,
+                  delay: 0, // Starts at t = 0 (exact same start time as Left Card)
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+              />
+
+              {/* Phase 2: Decorative Corner / Side Graphics - Enters sequentially after Phase 1 */}
               {[
                 ['topLeftGraphic', styles.topLeft, 'topLeft'],
                 ['topRightGraphic', styles.topRight, 'topRight'],
@@ -281,71 +304,68 @@ export default function Hero() {
               ]
                 .filter(([asset]) => Boolean(activeSlide[asset]))
                 .map(([asset, position, type], index) => {
-                  const anim = getDecorationAnimation(type, position, activeSlide.id, index);
+                  const isSlide3BottomRight = position === styles.bottomRight && activeSlide.id === 3;
+                  const targetRotate = isSlide3BottomRight ? -15 : 0;
+
+                  let initialOffset = { x: 0, y: 0 };
+                  let exitOffset = { x: 0, y: 0 };
+                  if (!shouldReduceMotion) {
+                    if (type === 'topLeft') {
+                      initialOffset = { x: -40, y: -30 };
+                      exitOffset = { x: -25, y: -20 };
+                    } else if (type === 'topRight') {
+                      initialOffset = { x: 40, y: -30 };
+                      exitOffset = { x: 25, y: -20 };
+                    } else if (type === 'bottomLeft') {
+                      initialOffset = { x: -40, y: 30 };
+                      exitOffset = { x: -25, y: 20 };
+                    } else if (type === 'bottomRight') {
+                      initialOffset = { x: 40, y: 30 };
+                      exitOffset = { x: 25, y: 20 };
+                    }
+                  }
+
+                  // Phase 2 begins strictly AFTER Phase 1 cards finish (at 750ms).
+                  // Each subsequent image starts with a distinct cumulative 300ms delay.
+                  const delay = shouldReduceMotion ? 0 : (CARD_ANIMATION_DURATION + index * DECORATION_STAGGER);
+
                   return (
                     <motion.img
-                      key={`${activeSlide.id}-${asset}`}
+                      key={`deco-${activeSlide.id}-${asset}`}
                       src={activeSlide[asset]}
                       alt=""
                       className={`${styles.decoration} ${position}`}
-                      initial={anim.initial}
-                      animate={heroReady ? anim.animate : anim.initial}
-                      exit={anim.exit}
-                      transition={anim.transition}
+                      initial={{
+                        opacity: 0,
+                        x: initialOffset.x,
+                        y: initialOffset.y,
+                        rotate: targetRotate,
+                      }}
+                      animate={heroReady ? {
+                        opacity: 1,
+                        x: 0,
+                        y: 0,
+                        rotate: targetRotate,
+                      } : {
+                        opacity: 0,
+                        x: initialOffset.x,
+                        y: initialOffset.y,
+                        rotate: targetRotate,
+                      }}
+                      exit={{
+                        opacity: 0,
+                        x: exitOffset.x,
+                        y: exitOffset.y,
+                        rotate: targetRotate,
+                      }}
+                      transition={{
+                        duration: shouldReduceMotion ? 0 : DECORATION_DURATION,
+                        delay,
+                        ease: [0.25, 1, 0.5, 1],
+                      }}
                     />
                   );
                 })}
-
-              {/* Left Showcase Card - Enters & exits smoothly */}
-              <motion.img
-                src={activeSlide.leftCardImage}
-                alt="Left Showcase Card"
-                className={`${styles.card} ${styles.leftCard}`}
-                initial={{
-                  x: shouldReduceMotion ? 0 : -75,
-                  opacity: 0,
-                }}
-                animate={{
-                  x: 0,
-                  opacity: 1,
-                }}
-                exit={{
-                  x: shouldReduceMotion ? 0 : -55,
-                  opacity: 0,
-                }}
-                transition={{
-                  duration: shouldReduceMotion ? 0 : 0.75,
-                  delay: shouldReduceMotion ? 0 : (isInitialMount ? 1.05 : 0.04),
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-              />
-
-              {/* Right Showcase Card - Enters & exits smoothly */}
-              <motion.img
-                src={activeSlide.rightCardImage}
-                alt="Right Showcase Card"
-                className={`${styles.card} ${styles.rightCard}`}
-                initial={{
-                  x: shouldReduceMotion ? 0 : 75,
-                  opacity: 0,
-                  scale: shouldReduceMotion ? 1 : 0.96,
-                }}
-                animate={{
-                  x: 0,
-                  opacity: 1,
-                  scale: 1,
-                }}
-                exit={{
-                  x: shouldReduceMotion ? 0 : 55,
-                  opacity: 0,
-                  scale: 0.96,
-                }}
-                transition={{
-                  duration: shouldReduceMotion ? 0 : 0.75,
-                  delay: shouldReduceMotion ? 0 : (isInitialMount ? 1.15 : 0.08),
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-              />
 
               {/* Hero Headline & Subtitle with subtle fade-up entrance & exit */}
               <motion.div
@@ -354,9 +374,12 @@ export default function Hero() {
                   y: shouldReduceMotion ? 0 : 20,
                   opacity: 0,
                 }}
-                animate={{
+                animate={heroReady ? {
                   y: 0,
                   opacity: 1,
+                } : {
+                  y: shouldReduceMotion ? 0 : 20,
+                  opacity: 0,
                 }}
                 exit={{
                   y: shouldReduceMotion ? 0 : -16,
@@ -364,7 +387,7 @@ export default function Hero() {
                 }}
                 transition={{
                   duration: shouldReduceMotion ? 0 : 0.7,
-                  delay: shouldReduceMotion ? 0 : (isInitialMount ? 1.2 : 0.06),
+                  delay: shouldReduceMotion ? 0 : (isInitialMount ? 0.1 : 0.06),
                   ease: [0.16, 1, 0.3, 1],
                 }}
               >

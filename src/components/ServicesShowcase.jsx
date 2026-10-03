@@ -274,14 +274,14 @@ export default function ServicesShowcase() {
     <section 
       id="services"
       ref={sectionRef} 
-      className="relative bg-[#FDFBF7] bg-repeat bg-center w-full py-4 my-0"
+      className="relative bg-[#FDFBF7] bg-repeat bg-center w-full py-4 lg:py-6 my-0 lg:min-h-[calc(100dvh-var(--header-height,76px))] flex items-center justify-center box-border"
       style={{ 
         backgroundImage: "url('/image/Home/section2/background.png')",
         backgroundSize: '600px auto',
       }}
     >
       <div 
-        className="w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-2"
+        className="w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-1"
       >
         <motion.div
           ref={cardRef}
@@ -292,12 +292,12 @@ export default function ServicesShowcase() {
           transition={{ duration: 0.5 }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="service-card w-full bg-[#FFFDF9] rounded-[2.5rem] lg:rounded-[3rem] px-6 sm:px-10 lg:px-14 py-8 sm:py-12 lg:py-14 border border-slate-100 shadow-xl relative overflow-hidden transition-all duration-300"
+          className="service-card w-full bg-[#FFFDF9] rounded-[2.5rem] lg:rounded-[3rem] px-6 sm:px-10 lg:px-12 py-6 sm:py-8 lg:py-9 border border-slate-100 shadow-xl relative overflow-hidden transition-all duration-300"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             
             {/* Left Column: Artwork Image + Overlaid White Service Card with Motion Transition */}
-            <div className="lg:col-span-6 relative flex justify-center items-center py-2 sm:py-4 min-h-[380px] sm:min-h-[440px]">
+            <div className="lg:col-span-6 relative flex justify-center items-center py-2 min-h-[320px] sm:min-h-[360px] lg:min-h-[400px]">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentService.id}
@@ -308,7 +308,7 @@ export default function ServicesShowcase() {
                   className={`service-art relative flex items-center justify-center w-full max-w-[480px] ${({ 'list-management': styles.listManagement, crm: styles.crmConsultation, 'web-dev': styles.webDevelopment, smm: styles.smm })[currentService.id] || ''}`}
                 >
                   {/* 1. Large Artwork Image */}
-                  <div className="relative w-full aspect-square sm:w-[420px] sm:h-[420px] rounded-[2.2rem] overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-300">
+                  <div className="relative w-full aspect-square max-w-[340px] sm:max-w-[380px] lg:max-w-[400px] max-h-[48vh] rounded-[2.2rem] overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-300">
                     <img
                       src={currentService.bgImage}
                       alt={currentService.title}
