@@ -262,12 +262,6 @@ export default function ServicesShowcase() {
     ? Math.min(services.length - 1, Math.max(0, activeIndex))
     : 0;
 
-  // Calculate synchronized continuous line progress between dots (0% to 100%)
-  const totalSegments = services.length - 1; // 5 segments between 6 dots
-  const linePercent = safeIndex >= totalSegments
-    ? 100
-    : Math.min(100, Math.max(0, ((safeIndex + Math.min(progress, 100) / 100) / totalSegments) * 100));
-
   const currentService = services[safeIndex] || services[0];
 
   return (
@@ -332,20 +326,37 @@ export default function ServicesShowcase() {
             {/* Center Column: Synchronized Vertical Timeline with Progress Animation */}
             <div className="hidden lg:flex lg:col-span-1 flex-col items-center justify-center relative py-4">
               <div className="relative flex flex-col items-center justify-between h-[360px] w-8">
-                {/* 1. Static Background Dashed Track */}
-                <div 
-                  className="absolute top-[12px] bottom-[12px] w-[2px] left-1/2 -translate-x-1/2 z-0 pointer-events-none border-l-2 border-dashed border-slate-300" 
-                />
+                {/* Track Container: Spans from Dot 0 center (top: 12px) to Dot 5 center (bottom: 12px) */}
+                <div className="absolute top-[12px] bottom-[12px] w-[2px] left-1/2 -translate-x-1/2 z-0 pointer-events-none">
+                  {/* Background Track: Static Light-Grey Dashed Line */}
+                  <div className="absolute inset-0 w-full border-l-2 border-dashed border-slate-300" />
 
-                {/* 2. Animated Green Progress Line Filling Downward Toward Next Dot */}
-                <div 
-                  className="absolute top-[12px] w-[2px] left-1/2 -translate-x-1/2 z-0 pointer-events-none overflow-hidden"
-                  style={{
-                    height: `calc((100% - 24px) * ${linePercent / 100})`,
-                    transition: safeIndex === 0 && progress < 4 ? 'none' : 'height 75ms linear',
-                  }}
-                >
-                  <div className="w-full h-[336px] bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                  {/* Green Progress Layer: 5 Connecting Segments between the 6 dots */}
+                  {Array.from({ length: services.length - 1 }).map((_, segIdx) => {
+                    const isCompleted = segIdx < safeIndex;
+                    const isActive = segIdx === safeIndex;
+                    const scale = isCompleted ? 1 : isActive ? Math.min(100, Math.max(0, progress)) / 100 : 0;
+
+                    return (
+                      <div
+                        key={`seg-${segIdx}`}
+                        className="absolute left-1/2 -translate-x-1/2 w-[2.5px] overflow-hidden"
+                        style={{
+                          top: `${segIdx * 20}%`,
+                          height: '20%',
+                        }}
+                      >
+                        <div
+                          className="w-full h-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.8)]"
+                          style={{
+                            transform: `scaleY(${scale})`,
+                            transformOrigin: 'top',
+                            transition: isActive && progress >= 3 ? 'transform 75ms linear' : 'none',
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* 3. 6 Interactive Circular Node Dots */}
