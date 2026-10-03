@@ -6,15 +6,61 @@ import styles from './ServicesShowcase.module.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const services = [
+  {
+    id: 'affiliate',
+    title: 'Affiliate Marketing',
+    subtitle: 'Performance-driven affiliate programs that help you acquire quality customers and scale faster.',
+    bgImage: '/image/Home/section2/am1.png',
+    activeDotIndex: 0,
+  },
+  {
+    id: 'email-sms',
+    title: 'Email & SMS',
+    subtitle: 'Reach your audience instantly with targeted email and SMS campaigns that drive real engagement.',
+    bgImage: '/image/Home/section2/email.png',
+    activeDotIndex: 1,
+  },
+  {
+    id: 'list-management',
+    title: 'List Management',
+    subtitle: 'Reach your audience instantly with targeted email and SMS campaigns that drive real engagement.',
+    bgImage: '/image/Home/section2/list management.png',
+    activeDotIndex: 2,
+  },
+  {
+    id: 'crm',
+    title: 'CRM Consultation',
+    subtitle: 'Reach your audience instantly with targeted email and SMS campaigns that drive real engagement.',
+    bgImage: '/image/Home/section2/crm1.png',
+    activeDotIndex: 3,
+  },
+  {
+    id: 'web-dev',
+    title: 'Web Development',
+    subtitle: 'Reach your audience instantly with targeted email and SMS campaigns that drive real engagement.',
+    bgImage: '/image/Home/section2/webdevelopment.png',
+    activeDotIndex: 4,
+  },
+  {
+    id: 'smm',
+    title: 'SMM',
+    subtitle: 'Reach your audience instantly with targeted email and SMS campaigns that drive real engagement.',
+    bgImage: '/image/Home/section2/smm1.png',
+    activeDotIndex: 5,
+  },
+];
+
 export default function ServicesShowcase() {
   const sectionRef = useRef(null);
   const cardRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [isInViewport, setIsInViewport] = useState(false);
+  const [isInViewport, setIsInViewport] = useState(true);
   const shouldReduceMotion = useReducedMotion();
 
+  const cycleDuration = 5000; // Consistent ~5 second interval per service slide
+  const lastSwitchTimeRef = useRef(Date.now());
   const isAnimatingRef = useRef(false);
   const activeIndexRef = useRef(0);
   const wheelDeltaAccumulator = useRef(0);
@@ -24,77 +70,83 @@ export default function ServicesShowcase() {
     activeIndexRef.current = activeIndex;
   }, [activeIndex]);
 
-  // Initial check if section is already in viewport on mount
+  // Native IntersectionObserver to accurately track when section is in viewport for autoplay
   useEffect(() => {
-    if (sectionRef.current) {
-      const rect = sectionRef.current.getBoundingClientRect();
-      const inView = rect.top < window.innerHeight * 0.85 && rect.bottom > window.innerHeight * 0.15;
-      if (inView) {
-        setIsInViewport(true);
-      }
+    const el = sectionRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      setIsInViewport(true);
+      return;
     }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInViewport(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
-  const services = [
-    {
-      id: 'affiliate',
-      title: 'Affiliate Marketing',
-      subtitle: 'Performance-driven affiliate programs that help you acquire quality customers and scale faster.',
-      bgImage: '/image/Home/section2/am1.png',
-      activeDotIndex: 0,
-    },
-    {
-      id: 'email-sms',
-      title: 'Email & SMS',
-      subtitle: 'Reach your audience instantly with targeted email and SMS campaigns that drive real engagement.',
-      bgImage: '/image/Home/section2/email.png',
-      activeDotIndex: 1,
-    },
-    {
-      id: 'list-management',
-      title: 'List Management',
-      subtitle: 'Reach your audience instantly with targeted email and SMS campaigns that drive real engagement.',
-      bgImage: '/image/Home/section2/list management.png',
-      activeDotIndex: 2,
-    },
-    {
-      id: 'crm',
-      title: 'CRM Consultation',
-      subtitle: 'Reach your audience instantly with targeted email and SMS campaigns that drive real engagement.',
-      bgImage: '/image/Home/section2/crm1.png',
-      activeDotIndex: 3,
-    },
-    {
-      id: 'web-dev',
-      title: 'Web Development',
-      subtitle: 'Reach your audience instantly with targeted email and SMS campaigns that drive real engagement.',
-      bgImage: '/image/Home/section2/webdevelopment.png',
-      activeDotIndex: 4,
-    },
-    {
-      id: 'smm',
-      title: 'SMM',
-      subtitle: 'Reach your audience instantly with targeted email and SMS campaigns that drive real engagement.',
-      bgImage: '/image/Home/section2/smm1.png',
-      activeDotIndex: 5,
-    },
-  ];
 
-  // Controlled service transition function (Locks out rapid skipping)
+  const loadedImagesRef = useRef(new Set());
+
+  // Preload all service images on component mount so all assets are cached and ready
+  useEffect(() => {
+    services.forEach((service) => {
+      const img = new Image();
+      img.src = service.bgImage;
+      if (img.complete) {
+        loadedImagesRef.current.add(service.bgImage);
+      } else {
+        img.onload = () => {
+          loadedImagesRef.current.add(service.bgImage);
+        };
+      }
+    });
+  }, []);
+
+  // Controlled service transition function (Smooth, non-blocking, preserves current slide until next is ready)
   const goToService = useCallback((nextIndex) => {
     if (isAnimatingRef.current) return;
     if (nextIndex < 0 || nextIndex >= services.length) return;
     if (nextIndex === activeIndexRef.current) return;
 
-    isAnimatingRef.current = true;
-    setActiveIndex(nextIndex);
-    setProgress(0);
+    const targetService = services[nextIndex];
 
-    // Lock transition for 0.7 seconds to ensure smooth animation without skipping
-    setTimeout(() => {
-      isAnimatingRef.current = false;
-    }, 700);
-  }, [services.length]);
+    const commitTransition = () => {
+      isAnimatingRef.current = true;
+      setActiveIndex(nextIndex);
+      lastSwitchTimeRef.current = Date.now();
+      setProgress(0);
+
+      // Lock duration matches the 350ms transition
+      setTimeout(() => {
+        isAnimatingRef.current = false;
+      }, 400);
+    };
+
+    // Keep current slide visible until target image is guaranteed loaded
+    if (loadedImagesRef.current.has(targetService.bgImage)) {
+      commitTransition();
+    } else {
+      const img = new Image();
+      img.src = targetService.bgImage;
+      if (img.complete) {
+        loadedImagesRef.current.add(targetService.bgImage);
+        commitTransition();
+      } else {
+        img.onload = () => {
+          loadedImagesRef.current.add(targetService.bgImage);
+          commitTransition();
+        };
+        img.onerror = () => {
+          commitTransition();
+        };
+      }
+    }
+  }, []);
 
   // GSAP ScrollTrigger: Pin section during scroll interaction & track section viewport entry/exit for autoplay
   useEffect(() => {
@@ -117,18 +169,6 @@ export default function ServicesShowcase() {
             wheelDeltaAccumulator.current = 0;
           }
         },
-      });
-
-      // 2. Section Viewport Trigger: Autoplay starts ONLY when section enters viewport, pauses when leaving
-      ScrollTrigger.create({
-        id: 'services-viewport',
-        trigger: section,
-        start: 'top 85%',
-        end: 'bottom 15%',
-        onEnter: () => setIsInViewport(true),
-        onLeave: () => setIsInViewport(false),
-        onEnterBack: () => setIsInViewport(true),
-        onLeaveBack: () => setIsInViewport(false),
       });
     }, sectionRef);
 
@@ -231,28 +271,29 @@ export default function ServicesShowcase() {
     };
   }, [services.length, goToService]);
 
-  // Autoplay Mode: Cycles cards automatically when idle AND section is in viewport (paused outside viewport or on hover)
+  // Autoplay Mode: Automatically advances to next service slide every ~5 seconds
   useEffect(() => {
     if (!isInViewport || shouldReduceMotion) return;
 
-    const cycleDuration = 3500; // 3.5 seconds per service card
-    const intervalTime = 40;
-    const step = (intervalTime / cycleDuration) * 100;
+    lastSwitchTimeRef.current = Date.now();
 
+    const intervalTime = 40; // 25fps progress updates for smooth SVG ring and timeline
     const timer = setInterval(() => {
-      if (!isHovered) {
-        setProgress((prev) => {
-          if (prev >= 100) {
-            setActiveIndex((prevIdx) => (prevIdx + 1) % services.length);
-            return 0;
-          }
-          return prev + step;
-        });
+      const now = Date.now();
+      const elapsed = now - lastSwitchTimeRef.current;
+      const currentProgress = Math.min(100, (elapsed / cycleDuration) * 100);
+
+      if (elapsed >= cycleDuration) {
+        lastSwitchTimeRef.current = now;
+        setProgress(0);
+        goToService((activeIndexRef.current + 1) % services.length);
+      } else {
+        setProgress(currentProgress);
       }
     }, intervalTime);
 
     return () => clearInterval(timer);
-  }, [isInViewport, shouldReduceMotion, isHovered, services.length]);
+  }, [isInViewport, shouldReduceMotion, goToService, cycleDuration]);
 
   const handleDotClick = (index) => {
     goToService(index);
@@ -290,22 +331,20 @@ export default function ServicesShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
           className="service-card w-full bg-[#FFFDF9] rounded-[2.5rem] lg:rounded-[3rem] px-6 sm:px-10 lg:px-12 py-6 sm:py-8 lg:py-9 border border-slate-100 shadow-xl relative overflow-hidden transition-all duration-300"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             
-            {/* Left Column: Artwork Image + Overlaid White Service Card with Motion Transition */}
-            <div className="lg:col-span-6 relative flex justify-center items-center py-2 min-h-[320px] sm:min-h-[360px] lg:min-h-[400px]">
-              <AnimatePresence mode="wait">
+            {/* Left Column: Artwork Image + Overlaid White Service Card with Smooth Overlapping Crossfade */}
+            <div className="lg:col-span-6 relative grid place-items-center py-2 min-h-[320px] sm:min-h-[360px] lg:min-h-[400px] w-full">
+              <AnimatePresence initial={false}>
                 <motion.div
                   key={currentService.id}
-                  initial={{ opacity: 0, scale: 0.96, y: 25, rotate: -2 }}
-                  animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.96, y: -25, rotate: 2 }}
-                  transition={{ duration: 0.7, ease: [0.25, 1, 0.5, 1] }}
-                  className={`service-art relative flex items-center justify-center w-full max-w-[480px] ${{
+                  initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1, zIndex: 10 }}
+                  exit={{ opacity: 0, y: -16, scale: 0.98, zIndex: 0 }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  className={`col-start-1 row-start-1 service-art relative flex items-center justify-center w-full max-w-[480px] ${{
                     affiliate: styles.affiliate,
                     'email-sms': styles.emailSms,
                     'list-management': styles.listManagement,
@@ -315,7 +354,13 @@ export default function ServicesShowcase() {
                   }[currentService.id] || ''}`}
                 >
                   {/* 1. Large Artwork Image */}
-                  <div className="relative w-full aspect-square max-w-[340px] sm:max-w-[380px] lg:max-w-[400px] max-h-[48vh] rounded-[2.2rem] overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-300">
+                  <div
+                    className={`relative w-full aspect-square ${
+                      currentService.id === 'affiliate'
+                        ? 'max-w-[360px] sm:max-w-[400px] lg:max-w-[430px] max-h-none'
+                        : 'max-w-[340px] sm:max-w-[380px] lg:max-w-[400px] max-h-[48vh]'
+                    } rounded-[2.2rem] overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-300`}
+                  >
                     <img
                       src={currentService.bgImage}
                       alt={currentService.title}
