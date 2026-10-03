@@ -122,7 +122,7 @@ section { scroll-margin-top: 90px; }
 @media(max-width:480px) { #hero .hero-panel { min-height: 580px; } }
 
 /* Services: 1498 × 830 cards with 114px vertical separation. */
-#services { background-color: #FDFBF7; background-image: url('/image/Home/section2/background.png'); background-size: 600px auto; background-repeat: repeat; background-position: center; padding: 0; margin-bottom: 90px; }
+#services { background-color: #FDFBF7; background-image: url('/image/Home/section2/background.png'); background-size: 600px auto; background-repeat: repeat; background-position: center; padding-top: clamp(60px, 8vw, 120px); padding-bottom: 40px; margin-bottom: 90px; }
 .pin-spacer { background-color: #FDFBF7 !important; background-image: url('/image/Home/section2/background.png') !important; background-size: 600px auto !important; background-repeat: repeat !important; background-position: center !important; }
 #services > div { width: min(calc(100% - 40px),calc(1498 * var(--figma-unit))); max-width: 1498px; padding: 0; }
 #services .service-card { border-radius: calc(28 * var(--figma-unit)); padding: calc(120 * var(--figma-unit)) calc(114 * var(--figma-unit)); min-height: calc(830 * var(--figma-unit)); background: linear-gradient(100deg, #ffffffc9, #fff8eddb); border: 1px solid #dedbd5; box-shadow: 25px 30px 35px -20px #28322e40; }
@@ -142,7 +142,7 @@ section { scroll-margin-top: 90px; }
 #services .service-card h2 { font-family: Inter,sans-serif; font-size: calc(80 * var(--figma-unit)); font-weight: 700; line-height: 1.3; color: #030b2b; letter-spacing: -.03em; white-space: nowrap; }
 #services .service-card > div > div:last-child > div { font-size: calc(25 * var(--figma-unit)); line-height: 1.6; color: #030b2b; margin-top: calc(25 * var(--figma-unit)); }
 @media (max-width:1023px) {
- #services { padding: 0; margin-bottom: 60px; }
+ #services { padding-top: 50px; padding-bottom: 30px; margin-bottom: 60px; }
  #services > div { width: calc(100% - 40px); max-width: 720px; }
  #services .service-card { min-height: 0; padding: 48px 28px; border-radius: 24px; }
  #services .service-card > div { grid-template-columns: 1fr; gap: 80px; }
