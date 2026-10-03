@@ -262,6 +262,12 @@ export default function ServicesShowcase() {
     ? Math.min(services.length - 1, Math.max(0, activeIndex))
     : 0;
 
+  // Calculate synchronized continuous line progress between dots (0% to 100%)
+  const totalSegments = services.length - 1; // 5 segments between 6 dots
+  const lineProgressPercent = safeIndex >= totalSegments
+    ? 100
+    : Math.min(100, Math.max(0, ((safeIndex + Math.min(progress, 100) / 100) / totalSegments) * 100));
+
   const currentService = services[safeIndex] || services[0];
 
   return (
@@ -323,43 +329,27 @@ export default function ServicesShowcase() {
               </AnimatePresence>
             </div>
 
-            {/* Center Column: Synchronized Vertical Timeline with Progress Animation */}
-            <div className="hidden lg:flex lg:col-span-1 flex-col items-center justify-center relative py-4">
-              <div className="relative flex flex-col items-center justify-between h-[360px] w-8">
-                {/* Track Container: Spans from Dot 0 center (top: 12px) to Dot 5 center (bottom: 12px) */}
-                <div className="absolute top-[12px] bottom-[12px] w-[2px] left-1/2 -translate-x-1/2 z-0 pointer-events-none">
-                  {/* Background Track: Static Light-Grey Dashed Line */}
-                  <div className="absolute inset-0 w-full border-l-2 border-dashed border-slate-300" />
+            {/* Center Column: Delicate Vertical Dashed Line Divider with 6 Interactive Node Dots */}
+            <div className="hidden lg:flex lg:col-span-1 flex-col items-center justify-center relative py-6 min-h-[320px]">
+              {/* Vertical Dashed Line with Animated Green Progress Layer */}
+              <div className="absolute top-4 bottom-4 w-[2px] pointer-events-none">
+                {/* 1. Base Grey Dashed Line */}
+                <div className="absolute inset-0 w-full border-l-2 border-dashed border-slate-300" />
 
-                  {/* Green Progress Layer: 5 Connecting Segments between the 6 dots */}
-                  {Array.from({ length: services.length - 1 }).map((_, segIdx) => {
-                    const isCompleted = segIdx < safeIndex;
-                    const isActive = segIdx === safeIndex;
-                    const scale = isCompleted ? 1 : isActive ? Math.min(100, Math.max(0, progress)) / 100 : 0;
-
-                    return (
-                      <div
-                        key={`seg-${segIdx}`}
-                        className="absolute left-1/2 -translate-x-1/2 w-[2.5px] overflow-hidden"
-                        style={{
-                          top: `${segIdx * 20}%`,
-                          height: '20%',
-                        }}
-                      >
-                        <div
-                          className="w-full h-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.8)]"
-                          style={{
-                            transform: `scaleY(${scale})`,
-                            transformOrigin: 'top',
-                            transition: isActive && progress >= 3 ? 'transform 75ms linear' : 'none',
-                          }}
-                        />
-                      </div>
-                    );
-                  })}
+                {/* 2. Green Progress Layer filling from top to bottom over the dashed line */}
+                <div
+                  className="absolute top-0 left-0 w-full overflow-hidden"
+                  style={{
+                    height: `${lineProgressPercent}%`,
+                    transition: safeIndex === 0 && progress < 4 ? 'none' : 'height 75ms linear',
+                  }}
+                >
+                  <div className="w-[2px] h-[600px] border-l-2 border-dashed border-[#10B981]" />
                 </div>
+              </div>
 
-                {/* 3. 6 Interactive Circular Node Dots */}
+              {/* 6 Circular Node Dots matching reference 1:1 with Progress Fill Animation */}
+              <div className="relative z-10 flex flex-col items-center justify-between space-y-6">
                 {services.map((service, dotIdx) => {
                   const isCompleted = dotIdx < safeIndex;
                   const isActive = dotIdx === safeIndex;
@@ -368,12 +358,12 @@ export default function ServicesShowcase() {
                     <button
                       key={service.id}
                       onClick={() => handleDotClick(dotIdx)}
-                      className="relative z-10 w-6 h-6 flex items-center justify-center focus:outline-none group/dot cursor-pointer transition-transform duration-200 hover:scale-110"
+                      className="flex items-center justify-center relative focus:outline-none group/dot cursor-pointer"
                       title={service.title}
                       aria-label={`Go to ${service.title}`}
                     >
                       {isActive ? (
-                        <div className="relative flex items-center justify-center w-6 h-6">
+                        <div className="relative flex items-center justify-center">
                           {/* Animated SVG Progress Ring */}
                           <svg className="w-6 h-6 -rotate-90 transform" viewBox="0 0 24 24">
                             <circle
@@ -382,7 +372,7 @@ export default function ServicesShowcase() {
                               r="9"
                               stroke="#E2E8F0"
                               strokeWidth="2.5"
-                              fill="white"
+                              fill="none"
                             />
                             <circle
                               cx="12"
@@ -397,18 +387,12 @@ export default function ServicesShowcase() {
                               className="transition-all duration-75 ease-linear"
                             />
                           </svg>
-                          <div className="absolute w-3 h-3 rounded-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
+                          <div className="absolute w-3 h-3 rounded-full bg-[#10B981] shadow-md" />
                         </div>
                       ) : isCompleted ? (
-                        <div className="relative flex items-center justify-center w-6 h-6">
-                          <div className="w-4 h-4 rounded-full bg-[#10B981] shadow-sm flex items-center justify-center transition-all duration-300">
-                            <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                          </div>
-                        </div>
+                        <div className="w-3.5 h-3.5 rounded-full bg-[#10B981] shadow-sm transition-all duration-300" />
                       ) : (
-                        <div className="relative flex items-center justify-center w-6 h-6">
-                          <div className="w-3.5 h-3.5 rounded-full bg-white border-2 border-slate-300 group-hover/dot:border-emerald-400 group-hover/dot:scale-110 transition-all duration-200 shadow-xs" />
-                        </div>
+                        <div className="w-3.5 h-3.5 rounded-full bg-white border-2 border-slate-300 group-hover/dot:border-emerald-400 transition-colors" />
                       )}
                     </button>
                   );
@@ -444,14 +428,9 @@ export default function ServicesShowcase() {
                       aria-label={`Go to ${service.title}`}
                     >
                       {isActive ? (
-                        <div className="w-8 h-2.5 rounded-full bg-slate-200 overflow-hidden relative">
-                          <div 
-                            className="h-full bg-[#10B981] rounded-full transition-all duration-75 ease-linear"
-                            style={{ width: `${Math.min(progress, 100)}%` }}
-                          />
-                        </div>
+                        <div className="w-6 h-2.5 rounded-full bg-[#10B981] transition-all duration-300" />
                       ) : isCompleted ? (
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#10B981] transition-all duration-300" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#10B981]/70 transition-all duration-300" />
                       ) : (
                         <div className="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" />
                       )}
