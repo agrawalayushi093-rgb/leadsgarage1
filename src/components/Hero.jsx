@@ -108,7 +108,6 @@ const slides = [
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isInitialMount, setIsInitialMount] = useState(true);
-  const [decorationsEntered, setDecorationsEntered] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
@@ -139,24 +138,22 @@ export default function Hero() {
     return () => clearInterval(timer);
   }, [currentSlide]);
 
-  // Coordinate initial entrance after site preloader finishes
+  const [heroReady, setHeroReady] = useState(false);
+
   useEffect(() => {
-    if (shouldReduceMotion) {
-      setDecorationsEntered(true);
-      setIsInitialMount(false);
+    // If preloader is present on page, wait for it to dismiss (1250ms); otherwise start immediately
+    const hasPreloader = typeof document !== 'undefined' && Boolean(document.querySelector('.fixed.z-\\[9999\\]'));
+    if (!hasPreloader) {
+      setHeroReady(true);
       return;
     }
-    const decoTimer = setTimeout(() => {
-      setDecorationsEntered(true);
-    }, 900);
-    const mountTimer = setTimeout(() => {
-      setIsInitialMount(false);
-    }, 1600);
-    return () => {
-      clearTimeout(decoTimer);
-      clearTimeout(mountTimer);
-    };
-  }, [shouldReduceMotion]);
+
+    const timer = setTimeout(() => {
+      setHeroReady(true);
+    }, 1250);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSlideChange = (idx) => {
     if (idx === currentSlide || isTransitioning) return;
@@ -167,8 +164,8 @@ export default function Hero() {
 
   const activeSlide = slides[currentSlide];
 
-  // Helper for directional entrance and exit of decorative assets with initial delay and stagger
-  const getDecorationAnimation = (type, position, slideId, decoIdx = 0) => {
+  // Helper for directional entrance and exit of decorative assets with genuine cumulative sequential stagger
+  const getDecorationAnimation = (type, position, slideId, orderIndex = 0) => {
     const isSlide3BottomRight = position === styles.bottomRight && slideId === 3;
     const targetRotate = isSlide3BottomRight ? -15 : 0;
 
@@ -176,31 +173,27 @@ export default function Hero() {
     let exitOffset = { x: 0, y: 0 };
     if (!shouldReduceMotion) {
       if (type === 'topLeft') {
-        initialOffset = { x: -35, y: -25 };
-        exitOffset = { x: -25, y: -18 };
+        initialOffset = { x: -40, y: -30 };
+        exitOffset = { x: -25, y: -20 };
       } else if (type === 'topRight') {
-        initialOffset = { x: 35, y: -25 };
-        exitOffset = { x: 25, y: -18 };
+        initialOffset = { x: 40, y: -30 };
+        exitOffset = { x: 25, y: -20 };
       } else if (type === 'bottomLeft') {
-        initialOffset = { x: -35, y: 25 };
-        exitOffset = { x: -25, y: 18 };
+        initialOffset = { x: -40, y: 30 };
+        exitOffset = { x: -25, y: 20 };
       } else if (type === 'bottomRight') {
-        initialOffset = { x: 35, y: 25 };
-        exitOffset = { x: 25, y: 18 };
+        initialOffset = { x: 40, y: 30 };
+        exitOffset = { x: 25, y: 20 };
       }
     }
 
-    // On initial mount: stagger by 200ms (0.2s) between images.
-    // On subsequent slide transitions: minimal delay for smooth crossfade.
-    const delay = shouldReduceMotion
-      ? 0
-      : !decorationsEntered
-      ? decoIdx * 0.2
-      : 0.05 + decoIdx * 0.04;
+    // Cumulative sequential stagger requested: 0ms, 300ms, 600ms, 900ms
+    const delay = shouldReduceMotion ? 0 : orderIndex * 0.3;
 
     return {
       initial: {
-        ...initialOffset,
+        x: initialOffset.x,
+        y: initialOffset.y,
         opacity: 0,
         rotate: targetRotate,
       },
@@ -211,14 +204,15 @@ export default function Hero() {
         rotate: targetRotate,
       },
       exit: {
-        ...exitOffset,
+        x: exitOffset.x,
+        y: exitOffset.y,
         opacity: 0,
         rotate: targetRotate,
       },
       transition: {
-        duration: shouldReduceMotion ? 0 : 0.75,
+        duration: shouldReduceMotion ? 0 : 0.7, // 700ms smooth fade-and-move animation (600–800ms)
         delay,
-        ease: [0.16, 1, 0.3, 1],
+        ease: [0.25, 1, 0.5, 1], // Smooth easing curve
       },
     };
   };
@@ -243,12 +237,12 @@ export default function Hero() {
           </motion.a>
 
           {/* AnimatePresence for smooth, seamless slide transitions (600-900ms) */}
-          <AnimatePresence initial={false}>
+          <AnimatePresence>
             <motion.div
               key={`slide-${activeSlide.id}`}
               data-slide={activeSlide.id}
               className={styles.slide}
-              initial={{ opacity: shouldReduceMotion ? 1 : 0 }}
+              initial={{ opacity: 1 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{
@@ -278,7 +272,7 @@ export default function Hero() {
                 }}
               />
 
-              {/* Decorative Corner / Side Graphics with Directional Entrances and Exits */}
+              {/* Decorative Corner / Side Graphics with Directional Entrances and Sequential Stagger */}
               {[
                 ['topLeftGraphic', styles.topLeft, 'topLeft'],
                 ['topRightGraphic', styles.topRight, 'topRight'],
@@ -286,8 +280,8 @@ export default function Hero() {
                 ['bottomRightGraphic', styles.bottomRight, 'bottomRight'],
               ]
                 .filter(([asset]) => Boolean(activeSlide[asset]))
-                .map(([asset, position, type], decoIdx) => {
-                  const anim = getDecorationAnimation(type, position, activeSlide.id, decoIdx);
+                .map(([asset, position, type], index) => {
+                  const anim = getDecorationAnimation(type, position, activeSlide.id, index);
                   return (
                     <motion.img
                       key={`${activeSlide.id}-${asset}`}
@@ -295,7 +289,7 @@ export default function Hero() {
                       alt=""
                       className={`${styles.decoration} ${position}`}
                       initial={anim.initial}
-                      animate={decorationsEntered || shouldReduceMotion ? anim.animate : anim.initial}
+                      animate={heroReady ? anim.animate : anim.initial}
                       exit={anim.exit}
                       transition={anim.transition}
                     />

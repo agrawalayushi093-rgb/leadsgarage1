@@ -119,7 +119,10 @@
   pointer-events: none;
 }
 .card { z-index: 2; }
-.decoration { z-index: 1; }
+.decoration {
+  z-index: 1;
+  will-change: transform, opacity;
+}
 .leftCard { width: 24.2%; left: 3.8%; top: 8.6%; }
 .rightCard { width: 25.2%; right: -.1%; top: 40.5%; }
 .topRight { width: 17%; right: -1%; top: 23%; z-index: 4; }
