@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
 export default function QualityControl() {
   const slides = [
@@ -8,15 +8,26 @@ export default function QualityControl() {
     { id: 2, src: '/image/Home/Group 39996.png', alt: 'Propensity Score Phone Screen Right' },
   ];
 
-  const [activeSlide, setActiveSlide] = useState(1);
+  const [[activeSlide, direction], setSlideState] = useState([1, 0]);
   const [isHovered, setIsHovered] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
+
+  const handleSlideChange = useCallback((newIndex, customDirection) => {
+    setSlideState(([current]) => {
+      if (newIndex === current) return [current, 0];
+      const dir = customDirection !== undefined
+        ? customDirection
+        : newIndex > current ? 1 : -1;
+      return [newIndex, dir];
+    });
+  }, []);
 
   // Autoplay timer: Automatically cycles cards every 3.5 seconds (Pauses on hover)
   useEffect(() => {
     if (isHovered) return;
 
     const timer = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % slides.length);
+      setSlideState(([curr]) => [(curr + 1) % slides.length, 1]);
     }, 3500);
 
     return () => clearInterval(timer);
@@ -29,6 +40,78 @@ export default function QualityControl() {
   const leftSlide = slides[leftSlideIndex];
   const centerSlide = slides[centerSlideIndex];
   const rightSlide = slides[rightSlideIndex];
+
+  // Center slot variants: smooth directional slide + clean crossfade
+  const centerVariants = {
+    enter: (dir) => ({
+      x: shouldReduceMotion ? 0 : dir >= 0 ? 55 : -55,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.65,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+    exit: (dir) => ({
+      x: shouldReduceMotion ? 0 : dir >= 0 ? -55 : 55,
+      opacity: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.55,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    }),
+  };
+
+  // Left slot variants
+  const leftVariants = {
+    enter: (dir) => ({
+      x: shouldReduceMotion ? 0 : dir >= 0 ? 45 : -45,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.65,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+    exit: (dir) => ({
+      x: shouldReduceMotion ? 0 : dir >= 0 ? -45 : 45,
+      opacity: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.55,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    }),
+  };
+
+  // Right slot variants
+  const rightVariants = {
+    enter: (dir) => ({
+      x: shouldReduceMotion ? 0 : dir >= 0 ? 45 : -45,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.65,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+    exit: (dir) => ({
+      x: shouldReduceMotion ? 0 : dir >= 0 ? -45 : 45,
+      opacity: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.55,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    }),
+  };
 
   return (
     <section id="quality" className="py-16 sm:py-20 lg:py-28 bg-transparent relative overflow-hidden w-full">
@@ -53,7 +136,7 @@ export default function QualityControl() {
                 return (
                   <button
                     key={idx}
-                    onClick={() => setActiveSlide(idx)}
+                    onClick={() => handleSlideChange(idx)}
                     className={`transition-all duration-300 rounded-full cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-500 ${
                       isActive
                         ? 'w-4 h-4 bg-[#00E599] ring-4 ring-emerald-100 shadow-md scale-110'
@@ -78,7 +161,7 @@ export default function QualityControl() {
           </div>
         </div>
 
-        {/* 3 Blue Phone Screens Visual Display with Autoplay & Motion Animation */}
+        {/* 3 Blue Phone Screens Visual Display with Autoplay & Smooth Motion Transition */}
         <div
           id="quality-slide-display"
           aria-label={`Card slide ${activeSlide + 1} of ${slides.length}`}
@@ -86,58 +169,105 @@ export default function QualityControl() {
           onMouseLeave={() => setIsHovered(false)}
           className="quality-phones relative w-full max-w-[1100px] mx-auto flex justify-center items-center py-6 sm:py-10 px-2 min-h-[380px] sm:min-h-[500px]"
         >
-          <AnimatePresence mode="popLayout">
-            {/* Left Phone Screen */}
-            <motion.div
-              key={`left-${leftSlide.id}`}
-              initial={{ opacity: 0, x: -50, scale: 0.85 }}
-              animate={{ opacity: 0.6, x: 0, scale: 0.95 }}
-              exit={{ opacity: 0, x: -30, scale: 0.8 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="absolute left-[4%] sm:left-[10%] md:left-[18%] lg:left-[22%] z-10 w-[180px] sm:w-[240px] md:w-[270px] transform -translate-x-1/2 hover:opacity-100 transition-opacity duration-300"
-            >
-              <img
-                src={leftSlide.src}
-                alt={leftSlide.alt}
-                style={{ aspectRatio: '369 / 649' }}
-                className="w-full h-auto object-contain drop-shadow-xl"
-              />
-            </motion.div>
+          {/* Left Phone Screen Slot */}
+          <div
+            className="quality-slot quality-slot-left"
+            onClick={() => handleSlideChange(leftSlideIndex, -1)}
+            role="button"
+            tabIndex={0}
+            aria-label={`Switch to ${leftSlide.alt}`}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleSlideChange(leftSlideIndex, -1);
+              }
+            }}
+          >
+            <div className="relative w-full aspect-[369/649] flex items-center justify-center overflow-visible">
+              <AnimatePresence mode="popLayout" custom={direction} initial={false}>
+                <motion.div
+                  key={`left-${leftSlide.id}`}
+                  custom={direction}
+                  variants={leftVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  className="w-full h-full flex items-center justify-center"
+                >
+                  <img
+                    src={leftSlide.src}
+                    alt={leftSlide.alt}
+                    style={{ aspectRatio: '369 / 649' }}
+                    className="w-full h-auto object-contain drop-shadow-xl select-none"
+                    draggable={false}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
 
-            {/* Center Phone Screen (Main / Highlighted) */}
-            <motion.div
-              key={`center-${centerSlide.id}`}
-              initial={{ opacity: 0, scale: 0.9, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -15 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="relative z-20 w-[210px] sm:w-[280px] md:w-[320px] transform hover:scale-[1.03] transition-all duration-300"
-            >
-              <img
-                src={centerSlide.src}
-                alt={centerSlide.alt}
-                style={{ aspectRatio: '427 / 749' }}
-                className="w-full h-auto object-contain drop-shadow-2xl"
-              />
-            </motion.div>
+          {/* Center Phone Screen Slot (Main / Highlighted) */}
+          <div className="quality-slot quality-slot-center">
+            <div className="relative w-full aspect-[427/749] flex items-center justify-center overflow-visible">
+              <AnimatePresence mode="popLayout" custom={direction} initial={false}>
+                <motion.div
+                  key={`center-${centerSlide.id}`}
+                  custom={direction}
+                  variants={centerVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  className="w-full h-full flex items-center justify-center"
+                >
+                  <img
+                    src={centerSlide.src}
+                    alt={centerSlide.alt}
+                    style={{ aspectRatio: '427 / 749' }}
+                    className="w-full h-auto object-contain drop-shadow-2xl select-none"
+                    draggable={false}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
 
-            {/* Right Phone Screen */}
-            <motion.div
-              key={`right-${rightSlide.id}`}
-              initial={{ opacity: 0, x: 50, scale: 0.85 }}
-              animate={{ opacity: 0.6, x: 0, scale: 0.95 }}
-              exit={{ opacity: 0, x: 30, scale: 0.8 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="absolute right-[4%] sm:right-[10%] md:right-[18%] lg:right-[22%] z-10 w-[180px] sm:w-[240px] md:w-[270px] transform translate-x-1/2 hover:opacity-100 transition-opacity duration-300"
-            >
-              <img
-                src={rightSlide.src}
-                alt={rightSlide.alt}
-                style={{ aspectRatio: '369 / 649' }}
-                className="w-full h-auto object-contain drop-shadow-xl"
-              />
-            </motion.div>
-          </AnimatePresence>
+          {/* Right Phone Screen Slot */}
+          <div
+            className="quality-slot quality-slot-right"
+            onClick={() => handleSlideChange(rightSlideIndex, 1)}
+            role="button"
+            tabIndex={0}
+            aria-label={`Switch to ${rightSlide.alt}`}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleSlideChange(rightSlideIndex, 1);
+              }
+            }}
+          >
+            <div className="relative w-full aspect-[369/649] flex items-center justify-center overflow-visible">
+              <AnimatePresence mode="popLayout" custom={direction} initial={false}>
+                <motion.div
+                  key={`right-${rightSlide.id}`}
+                  custom={direction}
+                  variants={rightVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  className="w-full h-full flex items-center justify-center"
+                >
+                  <img
+                    src={rightSlide.src}
+                    alt={rightSlide.alt}
+                    style={{ aspectRatio: '369 / 649' }}
+                    className="w-full h-auto object-contain drop-shadow-xl select-none"
+                    draggable={false}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+
         </div>
 
       </div>

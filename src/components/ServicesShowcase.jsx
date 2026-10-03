@@ -106,7 +106,7 @@ export default function ServicesShowcase() {
       ScrollTrigger.create({
         id: 'services-pin',
         trigger: section,
-        start: 'top top+=80',
+        start: 'top top',
         end: '+=400',
         pin: true,
         pinSpacing: true,
@@ -274,7 +274,7 @@ export default function ServicesShowcase() {
     <section 
       id="services"
       ref={sectionRef} 
-      className="relative bg-[#FDFBF7] bg-repeat bg-center w-full py-4 lg:py-6 my-0 lg:min-h-[calc(100dvh-var(--header-height,76px))] flex items-center justify-center box-border"
+      className="relative bg-[#FDFBF7] bg-repeat bg-center w-full min-h-[100dvh] flex items-center justify-center box-border"
       style={{ 
         backgroundImage: "url('/image/Home/section2/background.png')",
         backgroundSize: '600px auto',

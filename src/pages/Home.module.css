@@ -10,10 +10,11 @@
 
 /* Reduce only the breathing space below the team content. */
 .backgroundMerge :global(#team) {
-  padding-bottom: calc(70 * var(--figma-unit));
+  padding-bottom: calc(140 * var(--figma-unit));
+  overflow: visible;
 }
 @media (max-width: 1023px) {
-  .backgroundMerge :global(#team) { padding-bottom: 40px; }
+  .backgroundMerge :global(#team) { padding-bottom: 70px; }
 }
 
 /* The artwork includes empty sky above its cards: overlap that decorative area. */

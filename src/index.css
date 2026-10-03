@@ -95,8 +95,28 @@ section { scroll-margin-top: 90px; }
 }
 
 /* Services: 1498 × 725 cards with tightened vertical padding. */
-#services { background-color: #FDFBF7; background-image: url('/image/Home/section2/background.png'); background-size: 600px auto; background-repeat: repeat; background-position: center; padding: 0; margin-bottom: 75px; }
-.pin-spacer { background-color: #FDFBF7 !important; background-image: url('/image/Home/section2/background.png') !important; background-size: 600px auto !important; background-repeat: repeat !important; background-position: center !important; }
+#services {
+  scroll-margin-top: 0;
+  position: relative;
+  z-index: 5;
+  background-color: #FDFBF7;
+  background-image: url('/image/Home/section2/background.png');
+  background-size: 600px auto;
+  background-repeat: repeat;
+  background-position: center;
+  padding: calc(var(--header-height, 76px) + 16px) 0 24px;
+  min-height: 100dvh;
+  box-sizing: border-box;
+}
+.pin-spacer {
+  position: relative;
+  z-index: 5 !important;
+  background-color: #FDFBF7 !important;
+  background-image: url('/image/Home/section2/background.png') !important;
+  background-size: 600px auto !important;
+  background-repeat: repeat !important;
+  background-position: center !important;
+}
 #services > div { width: min(calc(100% - 40px),calc(1498 * var(--figma-unit))); max-width: 1498px; padding: 0; }
 #services .service-card { border-radius: calc(28 * var(--figma-unit)); padding: calc(68 * var(--figma-unit)) calc(114 * var(--figma-unit)) calc(95 * var(--figma-unit)); min-height: calc(725 * var(--figma-unit)); background: linear-gradient(100deg, #ffffffc9, #fff8eddb); border: 1px solid #dedbd5; box-shadow: 25px 30px 35px -20px #28322e40; }
 #services .service-card + .service-card { margin-top: calc(114 * var(--figma-unit)); }
@@ -168,11 +188,53 @@ section { scroll-margin-top: 90px; }
 #quality p { font-family: Inter,sans-serif; font-size: max(14px,calc(20 * var(--figma-unit))); line-height: 1.6; max-width: calc(650 * var(--figma-unit)); color: black; }
 #quality > div > div:first-child > div:nth-child(2) { margin-block: calc(36 * var(--figma-unit)); }
 #quality > div > div:first-child > div:last-child { margin-bottom: 0; }
-#quality .quality-phones { width: min(100%,calc(1500 * var(--figma-unit))); max-width: 1500px; min-height: 0; aspect-ratio: 1500/750; padding: 0; margin-top: calc(60 * var(--figma-unit)); }
-#quality .quality-phones > div { transform: none !important; }
-#quality .quality-phones > div:first-child { width: 24.6%; left: 16%; opacity: .9; }
-#quality .quality-phones > div:nth-child(2) { width: 28.4667%; }
-#quality .quality-phones > div:last-child { width: 24.6%; right: 16%; opacity: .9; }
+#quality .quality-phones {
+  position: relative;
+  width: min(100%, calc(1500 * var(--figma-unit)));
+  max-width: 1500px;
+  min-height: 0;
+  aspect-ratio: 1500/750;
+  padding: 0;
+  margin-top: calc(60 * var(--figma-unit));
+  overflow: visible;
+}
+#quality .quality-slot {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+#quality .quality-slot-left {
+  left: 16%;
+  width: 24.6%;
+  z-index: 10;
+  opacity: 0.88;
+  cursor: pointer;
+  transition: opacity 300ms ease;
+}
+#quality .quality-slot-left:hover {
+  opacity: 1;
+}
+#quality .quality-slot-center {
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 28.4667%;
+  z-index: 20;
+}
+#quality .quality-slot-right {
+  right: 16%;
+  width: 24.6%;
+  z-index: 10;
+  opacity: 0.88;
+  cursor: pointer;
+  transition: opacity 300ms ease;
+}
+#quality .quality-slot-right:hover {
+  opacity: 1;
+}
 #quality .quality-phones img { filter: none; }
 #quality .quality-phones::before, #quality .quality-phones::after { content: ''; position: absolute; width: 27%; height: 76%; border: calc(10 * var(--figma-unit)) solid #efefec; border-radius: calc(42 * var(--figma-unit)); opacity: .25; background: white; top: 12%; }
 #quality .quality-phones::before { left: 0; } #quality .quality-phones::after { right: 0; }
@@ -184,7 +246,15 @@ section { scroll-margin-top: 90px; }
  #quality h3 { font-size: 36px; }
  #quality p { font-size: 15px; max-width: 550px; }
  #quality .quality-phones { width: 100%; margin-top: 30px; }
+ #quality .quality-slot-left { left: 6%; width: 28%; }
+ #quality .quality-slot-center { width: 34%; }
+ #quality .quality-slot-right { right: 6%; width: 28%; }
  #quality > div > div:first-child > div:nth-child(2) { margin-block: 24px; }
+}
+@media(max-width:640px) {
+ #quality .quality-slot-left { left: 2%; width: 30%; }
+ #quality .quality-slot-center { width: 42%; }
+ #quality .quality-slot-right { right: 2%; width: 30%; }
 }
 
 /* Partnership cards: two 602 × 624 panels, separated by 68px. */
@@ -241,9 +311,8 @@ section { scroll-margin-top: 90px; }
 #team .leader-card > div:first-child { border-radius: calc(30 * var(--figma-unit)); aspect-ratio: 450/496; margin-bottom: calc(48 * var(--figma-unit)); }
 #team .leader-card > div:first-child img { object-fit: contain; filter: none; }
 #team h3 { font-family: Inter,sans-serif; font-size: calc(40 * var(--figma-unit)); font-weight: 600; line-height: 1.2; color: #3d3d3d; white-space: nowrap; }
-#team .leader-role { margin-top: 16px; }
-#team .leader-card:hover, #team .leader-card:focus-within { background: white; box-shadow: 0 10px 50px #0003; }
-#team .leader-card:focus-within > div:last-child { max-height: 180px; opacity: 1; margin-top: 8px; }
+#team .leader-card:hover, #team .leader-card:focus-within, #team .leader-card.is-hovered { background: white; box-shadow: 0 10px 50px #0003; }
+#team .leader-card:hover > div:last-child, #team .leader-card:focus-within > div:last-child, #team .leader-card.is-hovered > div:last-child { max-height: 200px; opacity: 1; margin-top: 8px; }
 #team .leader-card > div:last-child p { font-size: max(13px,calc(16 * var(--figma-unit))); }
 #team .leader-card a { width: calc(70 * var(--figma-unit)); height: calc(70 * var(--figma-unit)); min-width: 44px; min-height: 44px; background: transparent; box-shadow: none; }
 #team .leader-card a img { width: 100%; height: 100%; object-fit: contain; }

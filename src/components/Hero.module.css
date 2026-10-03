@@ -8,10 +8,12 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0 max(16px, 2.5vw) clamp(16px, 2.8vh, 36px);
+  padding: 0 max(16px, 2.5vw) clamp(28px, 4.2vh, 48px);
   background: transparent;
-  overflow: visible;
+  overflow: clip;
   position: relative;
+  z-index: 1;
+  isolation: isolate;
   box-sizing: border-box;
 }
 
@@ -31,7 +33,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 744 / 399;
-  max-height: calc(100dvh - var(--header-height, 76px) - clamp(18px, 3vh, 40px));
+  max-height: calc(100dvh - var(--header-height, 76px) - clamp(54px, 7.5vh, 82px));
   overflow: clip;
   isolation: isolate;
   border-radius: 3.5cqw;
@@ -52,19 +54,15 @@
   pointer-events: auto;
 }
 
-[data-slide="0"] .title { line-height: 1.06; }
 [data-slide="1"] .highlight { color: #ffe76a; }
 [data-slide="2"] .highlight,
 [data-slide="3"] .highlight { color: #fff; }
-[data-slide="1"] .content { top: 25%; left: 24%; }
-[data-slide="2"] .content { top: 25%; left: 24%; }
-[data-slide="3"] .content { top: 20%; left: 24%; }
 
 .content {
   position: absolute;
   z-index: 3;
-  top: 26.5%;
-  left: 25%;
+  top: 20%;
+  left: 24%;
   width: 52%;
   text-align: center;
 }
@@ -105,12 +103,8 @@
 }
 
 .stat { display: flex; flex-direction: column; align-items: center; }
-.number { font-size: 2.68cqw; line-height: 1.2; font-weight: 700; }
-.label { margin-top: .75cqw; font-size: max(8px, .94cqw); line-height: 1.3; color: #ffffffb3; }
-[data-slide="1"] .stats { top: 65%; left: 27%; width: 46%; }
-[data-slide="2"] .stats { top: 77%; left: 26%; width: 49%; color: #007482; }
-[data-slide="2"] .label { color: #007482; }
-[data-slide="3"] .stats { top: 58.5%; left: 26%; width: 49%; }
+.number { font-family: Inter, sans-serif; font-size: 2.68cqw; line-height: 1.2; font-weight: 700; color: #ffffff; }
+.label { margin-top: .75cqw; font-family: Inter, sans-serif; font-size: max(8px, .94cqw); line-height: 1.3; color: #ffffffb3; }
 
 .card, .decoration {
   position: absolute;
@@ -301,13 +295,10 @@
     left: 5%;
     width: 90%;
     gap: 6px;
+    color: #fff;
   }
-  [data-slide="2"] .stats,
-  [data-slide="2"] .label {
-    color: #007482 !important;
-  }
-  .number { font-size: clamp(17px, 4.5cqw, 22px); }
-  .label { margin-top: 4px; font-size: clamp(9px, 2cqw, 10px); }
+  .number { font-size: clamp(17px, 4.5cqw, 22px); color: #ffffff; }
+  .label { margin-top: 4px; font-size: clamp(9px, 2cqw, 10px); color: #ffffffb3; }
 
   [data-slide] .leftCard,
   [data-slide] .rightCard {

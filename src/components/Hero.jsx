@@ -134,6 +134,9 @@ export default function Hero() {
       setIsInitialMount(false);
       setIsTransitioning(true);
       setCurrentSlide((prev) => (prev + 1) % slides.length);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 750);
     }, AUTOPLAY_INTERVAL);
     return () => clearInterval(timer);
   }, [currentSlide]);
@@ -160,6 +163,9 @@ export default function Hero() {
     setIsInitialMount(false);
     setIsTransitioning(true);
     setCurrentSlide(idx);
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 750);
   };
 
   const activeSlide = slides[currentSlide];
@@ -371,23 +377,23 @@ export default function Hero() {
               <motion.div
                 className={styles.content}
                 initial={{
-                  y: shouldReduceMotion ? 0 : 20,
+                  y: shouldReduceMotion ? 0 : 16,
                   opacity: 0,
                 }}
                 animate={heroReady ? {
                   y: 0,
                   opacity: 1,
                 } : {
-                  y: shouldReduceMotion ? 0 : 20,
+                  y: shouldReduceMotion ? 0 : 16,
                   opacity: 0,
                 }}
                 exit={{
-                  y: shouldReduceMotion ? 0 : -16,
+                  y: shouldReduceMotion ? 0 : -12,
                   opacity: 0,
                 }}
                 transition={{
-                  duration: shouldReduceMotion ? 0 : 0.7,
-                  delay: shouldReduceMotion ? 0 : (isInitialMount ? 0.1 : 0.06),
+                  duration: shouldReduceMotion ? 0 : 0.6,
+                  delay: shouldReduceMotion ? 0 : (isInitialMount ? 0.15 : 0.06),
                   ease: [0.16, 1, 0.3, 1],
                 }}
               >
@@ -407,17 +413,20 @@ export default function Hero() {
                   y: shouldReduceMotion ? 0 : 16,
                   opacity: 0,
                 }}
-                animate={{
+                animate={heroReady ? {
                   y: 0,
                   opacity: 1,
+                } : {
+                  y: shouldReduceMotion ? 0 : 16,
+                  opacity: 0,
                 }}
                 exit={{
                   y: shouldReduceMotion ? 0 : -12,
                   opacity: 0,
                 }}
                 transition={{
-                  duration: shouldReduceMotion ? 0 : 0.7,
-                  delay: shouldReduceMotion ? 0 : (isInitialMount ? 1.35 : 0.1),
+                  duration: shouldReduceMotion ? 0 : 0.6,
+                  delay: shouldReduceMotion ? 0 : (isInitialMount ? 0.15 : 0.06),
                   ease: [0.16, 1, 0.3, 1],
                 }}
               >
