@@ -305,7 +305,14 @@ export default function ServicesShowcase() {
                   animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
                   exit={{ opacity: 0, scale: 0.96, y: -25, rotate: 2 }}
                   transition={{ duration: 0.7, ease: [0.25, 1, 0.5, 1] }}
-                  className={`service-art relative flex items-center justify-center w-full max-w-[480px] ${({ 'list-management': styles.listManagement, crm: styles.crmConsultation, 'web-dev': styles.webDevelopment, smm: styles.smm })[currentService.id] || ''}`}
+                  className={`service-art relative flex items-center justify-center w-full max-w-[480px] ${{
+                    affiliate: styles.affiliate,
+                    'email-sms': styles.emailSms,
+                    'list-management': styles.listManagement,
+                    crm: styles.crmConsultation,
+                    'web-dev': styles.webDevelopment,
+                    smm: styles.smm,
+                  }[currentService.id] || ''}`}
                 >
                   {/* 1. Large Artwork Image */}
                   <div className="relative w-full aspect-square max-w-[340px] sm:max-w-[380px] lg:max-w-[400px] max-h-[48vh] rounded-[2.2rem] overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-300">
@@ -317,8 +324,8 @@ export default function ServicesShowcase() {
                   </div>
 
                   {/* 2. White Card Overlaid Exactly Like Reference */}
-                  <div className="service-caption absolute bottom-2 sm:bottom-4 left-4 sm:left-6 z-20 w-[85%] sm:w-[80%] max-w-[340px] bg-white rounded-[1.8rem] p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-slate-100">
-                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 leading-tight mb-2">
+                  <div className="service-caption absolute bottom-0 sm:bottom-0 left-1/2 -translate-x-1/2 z-20 w-[88%] sm:w-[84%] max-w-[310px] bg-white rounded-2xl p-4 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-slate-100">
+                    <h3 className="text-lg sm:text-xl lg:text-2xl font-black text-slate-900 leading-tight mb-2">
                       {currentService.title}
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">

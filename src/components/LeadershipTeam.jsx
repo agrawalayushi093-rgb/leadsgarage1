@@ -52,7 +52,7 @@ export default function LeadershipTeam() {
           id: 'leadership-team-pin',
           trigger: section,
           start: 'top top',
-          end: '+=650',
+          end: () => (window.innerWidth < 768 ? '+=120' : '+=220'),
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,

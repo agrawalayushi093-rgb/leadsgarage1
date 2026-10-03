@@ -114,34 +114,36 @@
 }
 .card {
   z-index: 2;
+  max-height: 62%;
   will-change: transform, opacity;
 }
 .decoration {
   z-index: 1;
+  max-height: 32%;
   will-change: transform, opacity;
 }
 .leftCard { width: 24.2%; left: 3.8%; top: 8.6%; }
-.rightCard { width: 25.2%; right: -.1%; top: 40.5%; }
-.topRight { width: 17%; right: -1%; top: 23%; z-index: 4; }
-.bottomLeft { width: 16.3%; left: 3%; top: 51%; }
+.rightCard { width: 23.5%; right: 1.5%; top: 32%; }
+.topRight { width: 15.5%; right: 2.5%; top: 18%; z-index: 4; }
+.bottomLeft { width: 16%; left: 2.5%; top: 50%; }
 
-[data-slide="1"] .leftCard { width: 23%; left: 3.3%; top: 41%; }
-[data-slide="1"] .rightCard { width: 22.6%; right: 1.7%; top: 22.3%; }
+[data-slide="1"] .leftCard { width: 22.5%; left: 3%; top: 31%; }
+[data-slide="1"] .rightCard { width: 22.5%; right: 1.7%; top: 18%; }
 [data-slide="1"] .topLeft { width: 14%; left: 9%; top: 18%; }
 [data-slide="1"] .topRight { width: 12%; right: 12%; top: 10%; z-index: 1; }
-[data-slide="1"] .bottomRight { width: 15%; left: 59%; top: 87%; }
+[data-slide="1"] .bottomRight { width: 13%; left: 63%; top: 64%; }
 
-[data-slide="2"] .leftCard { width: 28%; left: 1.5%; top: 28%; }
-[data-slide="2"] .rightCard { width: 23.4%; right: 1.1%; top: 12%; }
-[data-slide="2"] .topLeft { width: 17%; left: 5%; top: 13%; }
-[data-slide="2"] .bottomLeft { width: 17%; left: -2%; top: 80%; }
-[data-slide="2"] .bottomRight { width: 19%; right: -4%; top: 62%; }
+[data-slide="2"] .leftCard { width: 25.5%; left: 2.5%; top: 24%; }
+[data-slide="2"] .rightCard { width: 23.4%; right: 1.5%; top: 12%; }
+[data-slide="2"] .topLeft { width: 16%; left: 5%; top: 13%; }
+[data-slide="2"] .bottomLeft { width: 14%; left: 2%; top: 56%; }
+[data-slide="2"] .bottomRight { width: 15%; right: 2.5%; top: 56%; }
 
-[data-slide="3"] .leftCard { width: 28%; left: 2%; top: 44%; }
-[data-slide="3"] .rightCard { width: 23.4%; right: 1.1%; top: 2%; }
-[data-slide="3"] .topLeft { width: 16%; left: 4.5%; top: 20%; }
-[data-slide="3"] .topRight { width: 17%; right: 4%; top: 49%; z-index: 1; }
-[data-slide="3"] .bottomRight { width: 15%; left: 57%; top: 76%; transform: rotate(-15deg); }
+[data-slide="3"] .leftCard { width: 25.5%; left: 2.5%; top: 25%; }
+[data-slide="3"] .rightCard { width: 23.4%; right: 1.5%; top: 6%; }
+[data-slide="3"] .topLeft { width: 15%; left: 4.5%; top: 20%; }
+[data-slide="3"] .topRight { width: 15%; right: 3%; top: 45%; z-index: 1; }
+[data-slide="3"] .bottomRight { width: 13%; left: 61%; top: 61%; transform: rotate(-15deg); }
 
 .badge {
   position: absolute;

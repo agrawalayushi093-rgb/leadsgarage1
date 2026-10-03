@@ -98,21 +98,21 @@ export default function AudienceSegments({ onOpenContact }) {
             isDefault ? styles.layerActive : styles.layerInactive
           }`}
         >
-          <div className="w-full h-full p-8 sm:p-10 lg:p-12 pb-0 sm:pb-0 flex flex-col justify-between">
-            <div className="space-y-1">
-              <span className="text-2xl sm:text-3xl lg:text-4xl font-light text-blue-100 block tracking-tight">
+          <div className="w-full h-full p-6 sm:p-8 lg:p-7 xl:p-9 pb-0 sm:pb-0 lg:pb-0 xl:pb-0 flex flex-col justify-between overflow-hidden">
+            <div className="space-y-0.5 sm:space-y-1">
+              <span className="text-lg sm:text-xl lg:text-2xl font-light text-blue-100 block tracking-tight">
                 {card.tagline}
               </span>
-              <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
+              <h3 className="text-2xl sm:text-3xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-black tracking-tight text-white">
                 {card.title}
               </h3>
             </div>
 
-            <div className="mt-8 flex justify-center items-end">
+            <div className="flex-1 flex justify-center items-end min-h-0 overflow-hidden mt-2 sm:mt-4">
               <img
                 src={card.image}
                 alt={`${card.title} Illustration`}
-                className="w-full max-w-md object-contain pointer-events-none drop-shadow-xl"
+                className="w-full max-w-[260px] sm:max-w-xs lg:max-w-sm xl:max-w-md h-full object-contain pointer-events-none drop-shadow-xl"
               />
             </div>
           </div>
@@ -124,42 +124,42 @@ export default function AudienceSegments({ onOpenContact }) {
             isExpanded ? styles.layerActive : styles.layerInactive
           }`}
         >
-          <div className="w-full h-full p-6 sm:p-10 lg:p-12 flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="w-full lg:w-[55%] flex flex-col justify-between space-y-6 z-10">
+          <div className="w-full h-full p-5 sm:p-7 lg:p-6 xl:p-9 flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-6 xl:gap-8 overflow-hidden">
+            <div className="w-full lg:w-[55%] flex flex-col justify-between space-y-2.5 sm:space-y-3 lg:space-y-3 xl:space-y-5 z-10">
               <div>
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-light text-blue-100 block tracking-tight">
+                <span className="text-lg sm:text-xl lg:text-2xl font-light text-blue-100 block tracking-tight">
                   {card.tagline}
                 </span>
-                <h3 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-white mt-1">
+                <h3 className="text-2xl sm:text-3xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold tracking-tight text-white mt-0.5">
                   {card.title}
                 </h3>
               </div>
 
-              <div className="space-y-4 text-blue-50/90 text-sm sm:text-base leading-relaxed font-normal">
+              <div className="space-y-2 sm:space-y-2.5 text-blue-50/90 text-xs sm:text-sm lg:text-xs xl:text-sm leading-relaxed font-normal">
                 <p className="!text-blue-50/90">{card.description1}</p>
                 <p className="!text-blue-50/90">{card.description2}</p>
               </div>
 
-              <div className="pt-2">
+              <div className="pt-1">
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     if (onOpenContact) onOpenContact();
                   }}
-                  className="inline-flex items-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-[#1853E6] hover:bg-[#1245C8] border border-blue-300/40 text-white font-semibold text-sm sm:text-base shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+                  className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-[#1853E6] hover:bg-[#1245C8] border border-blue-300/40 text-white font-semibold text-xs sm:text-sm shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
                 >
                   <span>{card.buttonText}</span>
-                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  <ArrowRight className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" />
                 </button>
               </div>
             </div>
 
-            <div className="w-full lg:w-[45%] flex items-end justify-center lg:justify-end h-full">
+            <div className="w-full lg:w-[45%] flex items-end justify-center lg:justify-end h-full min-h-0 overflow-hidden">
               <img
                 src={card.image}
                 alt={`${card.title} Illustration`}
-                className="w-full max-w-md lg:max-w-lg object-contain block drop-shadow-2xl pointer-events-none"
+                className="w-full max-w-xs sm:max-w-sm lg:max-w-md xl:max-w-lg h-full object-contain block drop-shadow-2xl pointer-events-none"
               />
             </div>
           </div>
@@ -194,15 +194,15 @@ export default function AudienceSegments({ onOpenContact }) {
     <section
       id="audience"
       ref={sectionRef}
-      className="py-6 sm:py-8 lg:py-8 lg:min-h-[calc(100dvh-var(--header-height,76px))] bg-[#FDFBF7] relative w-full flex flex-col items-center justify-center box-border"
+      className="py-4 sm:py-6 lg:py-5 lg:min-h-[calc(100dvh-var(--header-height,76px))] bg-[#FDFBF7] relative w-full flex flex-col items-center justify-center box-border"
     >
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-4 sm:mb-6">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
+        <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 lg:mb-9">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-slate-900 tracking-tight">
             Where Do you fit into this picture?
           </h2>
-          <p className="text-sm sm:text-base lg:text-lg text-slate-600 font-normal mt-2 leading-relaxed">
+          <p className="text-xs sm:text-sm lg:text-base text-slate-600 font-normal mt-1 sm:mt-1.5 leading-relaxed">
             We combine technology, data, and expertise to deliver measurable growth for your business.
           </p>
         </div>

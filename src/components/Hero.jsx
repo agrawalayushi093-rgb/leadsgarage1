@@ -323,11 +323,11 @@ export default function Hero() {
                       initialOffset = { x: 40, y: -30 };
                       exitOffset = { x: 25, y: -20 };
                     } else if (type === 'bottomLeft') {
-                      initialOffset = { x: -40, y: 30 };
-                      exitOffset = { x: -25, y: 20 };
+                      initialOffset = { x: -30, y: 18 };
+                      exitOffset = { x: -20, y: 15 };
                     } else if (type === 'bottomRight') {
-                      initialOffset = { x: 40, y: 30 };
-                      exitOffset = { x: 25, y: 20 };
+                      initialOffset = { x: 30, y: 18 };
+                      exitOffset = { x: 20, y: 15 };
                     }
                   }
 

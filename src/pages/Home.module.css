@@ -10,17 +10,17 @@
 
 /* Reduce only the breathing space below the team content. */
 .backgroundMerge :global(#team) {
-  padding-bottom: calc(140 * var(--figma-unit));
+  padding-bottom: clamp(24px, 4vh, 48px);
   overflow: visible;
 }
 @media (max-width: 1023px) {
-  .backgroundMerge :global(#team) { padding-bottom: 70px; }
+  .backgroundMerge :global(#team) { padding-bottom: 24px; }
 }
 
 /* The artwork includes empty sky above its cards: overlap that decorative area. */
 .backgroundMerge :global(.closing-section) {
   position: relative;
-  margin-top: calc(-200 * var(--figma-unit));
+  margin-top: calc(-180 * var(--figma-unit));
 }
 .backgroundMerge :global(#team) > div:last-child {
   z-index: 20;

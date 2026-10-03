@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 export default function DashboardCTA() {
   return (
-    <section id="showcase" className="relative w-full pt-16 sm:pt-24 lg:pt-32 pb-8 overflow-hidden bg-[#FDFBF7]">
+    <section id="showcase" className="relative w-full pt-4 sm:pt-6 lg:pt-8 pb-8 overflow-hidden bg-[#FDFBF7]">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* Showcase Image Display matching Reference 1:1 */}

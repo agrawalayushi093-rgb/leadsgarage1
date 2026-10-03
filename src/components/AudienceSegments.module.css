@@ -17,19 +17,19 @@
   gap: 1.25rem;
   align-items: stretch;
   justify-content: center;
-  min-height: 520px;
 }
 
 @media (min-width: 768px) {
   .cardsContainer {
     flex-direction: row;
-    gap: 1.5rem;
+    gap: 1.25rem;
+    min-height: 0;
   }
 }
 
 @media (min-width: 1024px) {
   .cardsContainer {
-    gap: 1.75rem;
+    gap: clamp(1rem, 1.6vw, 1.75rem);
   }
 }
 
@@ -37,7 +37,7 @@
 .card {
   position: relative;
   overflow: hidden;
-  border-radius: 2.5rem;
+  border-radius: clamp(1.75rem, 2.5vh, 2.5rem);
   color: white;
   cursor: pointer;
   user-select: none;
@@ -57,7 +57,7 @@
 /* Desktop sizing states (min-width: 768px) */
 @media (min-width: 768px) {
   .card {
-    height: 520px;
+    height: clamp(340px, 45vh, 520px);
   }
 
   /* Default state: both cards share equal 50% width */
