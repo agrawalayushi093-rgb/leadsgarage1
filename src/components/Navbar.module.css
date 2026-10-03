@@ -2,10 +2,10 @@
   --nav-progress: 0;
   --nav-compact-width: min(88%, 1240px);
   --nav-edge-padding: var(--page-gutter);
-  --nav-bar-height: calc(clamp(44px, 2.969vw, 57px) + 24px);
-  --nav-start-top: calc((clamp(80px, 7.34375vw, 141px) - var(--nav-bar-height)) / 2);
+  --nav-bar-height: clamp(52px, 4.2vw, 68px);
+  --nav-start-top: calc((var(--header-height, 76px) - var(--nav-bar-height)) / 2);
   position: fixed;
-  top: calc(var(--nav-start-top) + (16px - var(--nav-start-top)) * var(--nav-progress));
+  top: calc(var(--nav-start-top) + (14px - var(--nav-start-top)) * var(--nav-progress));
   left: 50%;
   width: calc(100% - (100% - var(--nav-compact-width)) * var(--nav-progress));
   transform: translateX(-50%);
@@ -28,13 +28,16 @@
 
 @media (max-width: 1100px) {
   .header {
-    top: calc(12px * var(--nav-progress));
+    --nav-bar-height: 64px;
+    --nav-start-top: calc((var(--header-height, 68px) - var(--nav-bar-height)) / 2);
+    top: calc(var(--nav-start-top) + (10px - var(--nav-start-top)) * var(--nav-progress));
     width: calc(100% - 24px * var(--nav-progress));
     border-radius: calc(16px * var(--nav-progress));
   }
 
   .header.header > nav > div {
-    height: 80px;
-    padding-inline: 24px;
+    height: var(--nav-bar-height);
+    padding-inline: 20px;
   }
 }
+

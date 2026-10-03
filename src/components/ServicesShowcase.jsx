@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import styles from './ServicesShowcase.module.css';
@@ -11,20 +11,29 @@ export default function ServicesShowcase() {
   const cardRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const [isUserInteracting, setIsUserInteracting] = useState(false);
   const [progress, setProgress] = useState(0);
-
   const [isInViewport, setIsInViewport] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const isAnimatingRef = useRef(false);
   const activeIndexRef = useRef(0);
   const wheelDeltaAccumulator = useRef(0);
-  const interactionTimerRef = useRef(null);
 
   // Keep activeIndexRef synchronized with state
   useEffect(() => {
     activeIndexRef.current = activeIndex;
   }, [activeIndex]);
+
+  // Initial check if section is already in viewport on mount
+  useEffect(() => {
+    if (sectionRef.current) {
+      const rect = sectionRef.current.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight * 0.85 && rect.bottom > window.innerHeight * 0.15;
+      if (inView) {
+        setIsInViewport(true);
+      }
+    }
+  }, []);
 
   const services = [
     {
@@ -75,22 +84,16 @@ export default function ServicesShowcase() {
   const goToService = useCallback((nextIndex) => {
     if (isAnimatingRef.current) return;
     if (nextIndex < 0 || nextIndex >= services.length) return;
+    if (nextIndex === activeIndexRef.current) return;
 
     isAnimatingRef.current = true;
-    setIsUserInteracting(true);
     setActiveIndex(nextIndex);
-    setProgress(100);
+    setProgress(0);
 
-    // Reset user interaction timer after idle period (resumes autoplay when idle)
-    if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
-    interactionTimerRef.current = setTimeout(() => {
-      setIsUserInteracting(false);
-    }, 4500);
-
-    // Lock transition for 0.75 seconds to ensure smooth 0.7s animation without skipping
+    // Lock transition for 0.7 seconds to ensure smooth animation without skipping
     setTimeout(() => {
       isAnimatingRef.current = false;
-    }, 750);
+    }, 700);
   }, [services.length]);
 
   // GSAP ScrollTrigger: Pin section during scroll interaction & track section viewport entry/exit for autoplay
@@ -228,16 +231,16 @@ export default function ServicesShowcase() {
     };
   }, [services.length, goToService]);
 
-  // Autoplay Mode: Cycles cards automatically when idle AND section is in viewport (paused outside viewport)
+  // Autoplay Mode: Cycles cards automatically when idle AND section is in viewport (paused outside viewport or on hover)
   useEffect(() => {
-    if (!isInViewport) return;
+    if (!isInViewport || shouldReduceMotion) return;
 
     const cycleDuration = 3500; // 3.5 seconds per service card
     const intervalTime = 40;
     const step = (intervalTime / cycleDuration) * 100;
 
     const timer = setInterval(() => {
-      if (!isHovered && !isUserInteracting && !isAnimatingRef.current) {
+      if (!isHovered) {
         setProgress((prev) => {
           if (prev >= 100) {
             setActiveIndex((prevIdx) => (prevIdx + 1) % services.length);
@@ -249,14 +252,7 @@ export default function ServicesShowcase() {
     }, intervalTime);
 
     return () => clearInterval(timer);
-  }, [isInViewport, isHovered, isUserInteracting, services.length]);
-
-  // Reset progress ring when active service changes manually
-  useEffect(() => {
-    if (isUserInteracting) {
-      setProgress(100);
-    }
-  }, [activeIndex, isUserInteracting]);
+  }, [isInViewport, shouldReduceMotion, isHovered, services.length]);
 
   const handleDotClick = (index) => {
     goToService(index);
@@ -265,6 +261,12 @@ export default function ServicesShowcase() {
   const safeIndex = (typeof activeIndex === 'number' && !isNaN(activeIndex))
     ? Math.min(services.length - 1, Math.max(0, activeIndex))
     : 0;
+
+  // Calculate synchronized continuous line progress between dots (0% to 100%)
+  const totalSegments = services.length - 1; // 5 segments between 6 dots
+  const linePercent = safeIndex >= totalSegments
+    ? 100
+    : Math.min(100, Math.max(0, ((safeIndex + Math.min(progress, 100) / 100) / totalSegments) * 100));
 
   const currentService = services[safeIndex] || services[0];
 
@@ -327,13 +329,26 @@ export default function ServicesShowcase() {
               </AnimatePresence>
             </div>
 
-            {/* Center Column: Delicate Vertical Dashed Line Divider with 6 Interactive Node Dots */}
-            <div className="hidden lg:flex lg:col-span-1 flex-col items-center justify-center relative py-6 min-h-[320px]">
-              {/* Vertical Dashed Line */}
-              <div className="absolute top-4 bottom-4 w-[2px] border-l-2 border-dashed border-slate-300" />
+            {/* Center Column: Synchronized Vertical Timeline with Progress Animation */}
+            <div className="hidden lg:flex lg:col-span-1 flex-col items-center justify-center relative py-4">
+              <div className="relative flex flex-col items-center justify-between h-[360px] w-8">
+                {/* 1. Static Background Dashed Track */}
+                <div 
+                  className="absolute top-[12px] bottom-[12px] w-[2px] left-1/2 -translate-x-1/2 z-0 pointer-events-none border-l-2 border-dashed border-slate-300" 
+                />
 
-              {/* 6 Circular Node Dots matching reference 1:1 with Progress Fill Animation */}
-              <div className="relative z-10 flex flex-col items-center justify-between space-y-6">
+                {/* 2. Animated Green Progress Line Filling Downward Toward Next Dot */}
+                <div 
+                  className="absolute top-[12px] w-[2px] left-1/2 -translate-x-1/2 z-0 pointer-events-none overflow-hidden"
+                  style={{
+                    height: `calc((100% - 24px) * ${linePercent / 100})`,
+                    transition: safeIndex === 0 && progress < 4 ? 'none' : 'height 75ms linear',
+                  }}
+                >
+                  <div className="w-full h-[336px] bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                </div>
+
+                {/* 3. 6 Interactive Circular Node Dots */}
                 {services.map((service, dotIdx) => {
                   const isCompleted = dotIdx < safeIndex;
                   const isActive = dotIdx === safeIndex;
@@ -342,12 +357,12 @@ export default function ServicesShowcase() {
                     <button
                       key={service.id}
                       onClick={() => handleDotClick(dotIdx)}
-                      className="flex items-center justify-center relative focus:outline-none group/dot cursor-pointer"
+                      className="relative z-10 w-6 h-6 flex items-center justify-center focus:outline-none group/dot cursor-pointer transition-transform duration-200 hover:scale-110"
                       title={service.title}
                       aria-label={`Go to ${service.title}`}
                     >
                       {isActive ? (
-                        <div className="relative flex items-center justify-center">
+                        <div className="relative flex items-center justify-center w-6 h-6">
                           {/* Animated SVG Progress Ring */}
                           <svg className="w-6 h-6 -rotate-90 transform" viewBox="0 0 24 24">
                             <circle
@@ -356,7 +371,7 @@ export default function ServicesShowcase() {
                               r="9"
                               stroke="#E2E8F0"
                               strokeWidth="2.5"
-                              fill="none"
+                              fill="white"
                             />
                             <circle
                               cx="12"
@@ -371,12 +386,18 @@ export default function ServicesShowcase() {
                               className="transition-all duration-75 ease-linear"
                             />
                           </svg>
-                          <div className="absolute w-3 h-3 rounded-full bg-[#10B981] shadow-md" />
+                          <div className="absolute w-3 h-3 rounded-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
                         </div>
                       ) : isCompleted ? (
-                        <div className="w-3.5 h-3.5 rounded-full bg-[#10B981] shadow-sm transition-all duration-300" />
+                        <div className="relative flex items-center justify-center w-6 h-6">
+                          <div className="w-4 h-4 rounded-full bg-[#10B981] shadow-sm flex items-center justify-center transition-all duration-300">
+                            <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                          </div>
+                        </div>
                       ) : (
-                        <div className="w-3.5 h-3.5 rounded-full bg-white border-2 border-slate-300 group-hover/dot:border-emerald-400 transition-colors" />
+                        <div className="relative flex items-center justify-center w-6 h-6">
+                          <div className="w-3.5 h-3.5 rounded-full bg-white border-2 border-slate-300 group-hover/dot:border-emerald-400 group-hover/dot:scale-110 transition-all duration-200 shadow-xs" />
+                        </div>
                       )}
                     </button>
                   );
@@ -412,9 +433,14 @@ export default function ServicesShowcase() {
                       aria-label={`Go to ${service.title}`}
                     >
                       {isActive ? (
-                        <div className="w-6 h-2.5 rounded-full bg-[#10B981] transition-all duration-300" />
+                        <div className="w-8 h-2.5 rounded-full bg-slate-200 overflow-hidden relative">
+                          <div 
+                            className="h-full bg-[#10B981] rounded-full transition-all duration-75 ease-linear"
+                            style={{ width: `${Math.min(progress, 100)}%` }}
+                          />
+                        </div>
                       ) : isCompleted ? (
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#10B981]/70 transition-all duration-300" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#10B981] transition-all duration-300" />
                       ) : (
                         <div className="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" />
                       )}
